@@ -1,0 +1,14 @@
+{
+  "validation_results": [
+    {
+      "evidence": [],
+      "execution_artifact": "validation-execution/pred_monitoring_drains.py",
+      "falsification_specification_id": "fals_pred_monitoring_drains",
+      "id": "validation_pred_monitoring_drains",
+      "prediction_id": "pred_monitoring_drains",
+      "specification_hash": "7e4d90b24983d6e73fa6037de6692f9b1b36d8aad6cb736d64778dc06dbbc338",
+      "status": "observed_directional_contradiction",
+      "summary": "Frozen explicit-group comparison: outcome prevalence was 0.088608 in group A and 0.608434 in group B (difference -0.519826)."
+    }
+  ]
+}

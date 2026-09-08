@@ -1,0 +1,14 @@
+{
+  "validation_results": [
+    {
+      "evidence": [],
+      "execution_artifact": "validation-execution/pred_resttime_marker.py",
+      "falsification_specification_id": "fals_pred_resttime_marker",
+      "id": "validation_pred_resttime_marker",
+      "prediction_id": "pred_resttime_marker",
+      "specification_hash": "b2cda9a7b33544648d6ba8c2078b52cc33b83283d9f13f07a2ce3ee64b37c928",
+      "status": "prediction_consistent",
+      "summary": "Frozen explicit-group comparison: outcome prevalence was 0.248521 in group A and 0.237654 in group B (difference 0.010866)."
+    }
+  ]
+}

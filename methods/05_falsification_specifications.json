@@ -1,0 +1,1233 @@
+{
+  "falsification_specifications": [
+    {
+      "comparison": {
+        "estimand": "outcome_prevalence_difference",
+        "group_a": "condition_is_true",
+        "group_b": "condition_is_false"
+      },
+      "created_at": "2026-09-08T02:47:44.396041+00:00",
+      "decision_rule": {
+        "consistent_when": "observed_difference_positive",
+        "contradicted_when": "observed_difference_non_positive",
+        "not_testable_when": "comparison_group_empty_or_required_field_missing",
+        "type": "directional_prevalence"
+      },
+      "expressions": {},
+      "hypotheses": {
+        "expected": "observed_difference_positive",
+        "opposite": "observed_difference_non_positive"
+      },
+      "id": "fals_pred_intrusion_cooccur",
+      "measurable_implication": {
+        "condition": "condition",
+        "outcome": "outcome",
+        "relation": "cooccurs"
+      },
+      "measurement": {
+        "condition": "ms_resttime_intrusion",
+        "outcome": "ms_depletion"
+      },
+      "measurement_protocol": "frozen_llm_question_v1",
+      "measurement_rule_snapshot": {},
+      "measurement_specification_snapshot": {
+        "condition": {
+          "construct_id": "resttime_intrusion",
+          "created_at": "2026-09-08T02:05:31.594656+00:00",
+          "id": "ms_resttime_intrusion",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text describe mental academic activity (e.g., worrying, planning, or mentally going through schoolwork) occurring during a non-study context such as rest, leisure, family time, or downtime?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_burden_depletion",
+            "pred_intrusion_cooccur",
+            "pred_resttime_marker"
+          ],
+          "specification_hash": "e148bd59d01ef12273205ec811874e4a9dcfcdf9390d8e441f8617c093a311df",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        },
+        "outcome": {
+          "construct_id": "depletion",
+          "created_at": "2026-09-08T02:05:31.645065+00:00",
+          "id": "ms_depletion",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text express feeling depleted, for example drained, numb, tired, exhausted, unable to rest, or unable to disconnect?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_burden_depletion",
+            "pred_intrusion_cooccur",
+            "pred_monitoring_drains"
+          ],
+          "specification_hash": "8fa8074fd3d86cbbb9afbf91eb41a1c47305674627564669cea66c4fbf5c29eb",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        }
+      },
+      "missing_measurement_constructs": [],
+      "population": {
+        "exclude": [],
+        "include": "all_valid_records"
+      },
+      "prediction_id": "pred_intrusion_cooccur",
+      "readiness": "ready",
+      "required_fields": [
+        "record_id",
+        "text_review"
+      ],
+      "specification_hash": "7485615623fa3e0bb582340d940c8f2e636c43dad5d715a2599d96a120bba5ef",
+      "template_id": "cooccurrence_v1",
+      "unresolved": []
+    },
+    {
+      "comparison": {
+        "estimand": "outcome_prevalence_difference",
+        "group_a": "expression_group_a_is_true_and_group_b_is_false",
+        "group_b": "expression_group_b_is_true_and_group_a_is_false"
+      },
+      "created_at": "2026-09-08T02:47:44.412614+00:00",
+      "decision_rule": {
+        "consistent_when": "observed_difference_positive",
+        "contradicted_when": "observed_difference_non_positive",
+        "not_testable_when": "comparison_group_empty_or_required_field_missing",
+        "type": "explicit_group_directional_prevalence"
+      },
+      "expressions": {
+        "group_a": {
+          "measurement": "fear",
+          "op": "measurement"
+        },
+        "group_b": {
+          "op": "not",
+          "operand": {
+            "measurement": "fear",
+            "op": "measurement"
+          }
+        },
+        "outcome": {
+          "op": "any",
+          "operands": [
+            {
+              "measurement": "tiredness_of_caring",
+              "op": "measurement"
+            },
+            {
+              "measurement": "meaning_loss",
+              "op": "measurement"
+            }
+          ]
+        }
+      },
+      "hypotheses": {
+        "expected": "observed_difference_positive",
+        "opposite": "observed_difference_non_positive"
+      },
+      "id": "fals_pred_worry_tiredness",
+      "measurable_implication": {
+        "condition": "condition",
+        "outcome": "outcome",
+        "relation": "higher_prevalence"
+      },
+      "measurement": {
+        "fear": "ms_fear_of_failure",
+        "meaning_loss": "ms_meaning_loss",
+        "tiredness_of_caring": "ms_tiredness_of_caring"
+      },
+      "measurement_protocol": "frozen_llm_question_v1",
+      "measurement_rule_snapshot": {},
+      "measurement_specification_snapshot": {
+        "fear": {
+          "construct_id": "fear_of_failure",
+          "created_at": "2026-09-08T02:05:31.656982+00:00",
+          "id": "ms_fear_of_failure",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text express fear, worry, or dread specifically about failing or about negative academic outcomes?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_anxiety_attenuated",
+            "pred_worry_tiredness"
+          ],
+          "specification_hash": "13fa085e9f03a31f418475ff14ab4b1224cb3a7e2e55b2c8a473e067f20a406c",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        },
+        "meaning_loss": {
+          "construct_id": "meaning_loss",
+          "created_at": "2026-09-08T02:05:31.722059+00:00",
+          "id": "ms_meaning_loss",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text express a loss of meaning for schoolwork, e.g., schoolwork no longer feels meaningful or enjoying learning has faded away?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_anxiety_attenuated",
+            "pred_meaning_collapse",
+            "pred_worry_tiredness"
+          ],
+          "specification_hash": "276fbaba292c502c31d8e5ef005d4250242a33e75b68f5886cd0371192b2c85c",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        },
+        "tiredness_of_caring": {
+          "construct_id": "tiredness_of_caring",
+          "created_at": "2026-09-08T02:05:31.667584+00:00",
+          "id": "ms_tiredness_of_caring",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text express tiredness of caring, e.g., barely caring, being tired of caring, or caring less than before?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_anxiety_attenuated",
+            "pred_worry_tiredness"
+          ],
+          "specification_hash": "32a80dfd4be6b6eab0f482bf5ff1a0edb61dc21aa629e64e56404f2913a49b66",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        }
+      },
+      "missing_measurement_constructs": [],
+      "population": {
+        "exclude": [],
+        "include": "all_valid_records"
+      },
+      "prediction_id": "pred_worry_tiredness",
+      "readiness": "ready",
+      "required_fields": [
+        "record_id",
+        "text_review"
+      ],
+      "specification_hash": "99ec9d4e49a4e9a70507cbfd270dbc67bbb02f63c79372aeabfa851b3421e621",
+      "template_id": "explicit_group_prevalence_contrast_v1",
+      "unresolved": []
+    },
+    {
+      "comparison": {
+        "estimand": "outcome_prevalence_difference",
+        "group_a": "expression_group_a_is_true_and_group_b_is_false",
+        "group_b": "expression_group_b_is_true_and_group_a_is_false"
+      },
+      "created_at": "2026-09-08T02:47:44.427824+00:00",
+      "decision_rule": {
+        "consistent_when": "observed_difference_positive",
+        "contradicted_when": "observed_difference_non_positive",
+        "not_testable_when": "comparison_group_empty_or_required_field_missing",
+        "type": "explicit_group_directional_prevalence"
+      },
+      "expressions": {
+        "group_a": {
+          "measurement": "self_inadequacy",
+          "op": "measurement"
+        },
+        "group_b": {
+          "op": "all",
+          "operands": [
+            {
+              "measurement": "external_cause",
+              "op": "measurement"
+            },
+            {
+              "op": "not",
+              "operand": {
+                "measurement": "self_inadequacy",
+                "op": "measurement"
+              }
+            }
+          ]
+        },
+        "outcome": {
+          "op": "all",
+          "operands": [
+            {
+              "measurement": "monitoring",
+              "op": "measurement"
+            },
+            {
+              "measurement": "comparison",
+              "op": "measurement"
+            }
+          ]
+        }
+      },
+      "hypotheses": {
+        "expected": "observed_difference_positive",
+        "opposite": "observed_difference_non_positive"
+      },
+      "id": "fals_pred_inadequacy_loop",
+      "measurable_implication": {
+        "condition": "condition",
+        "outcome": "outcome",
+        "relation": "higher_prevalence"
+      },
+      "measurement": {
+        "comparison": "ms_negative_self_comparison",
+        "external_cause": "ms_external_cause_framing",
+        "monitoring": "ms_self_monitoring",
+        "self_inadequacy": "ms_self_inadequacy_framing"
+      },
+      "measurement_protocol": "frozen_llm_question_v1",
+      "measurement_rule_snapshot": {},
+      "measurement_specification_snapshot": {
+        "comparison": {
+          "construct_id": "negative_self_comparison",
+          "created_at": "2026-09-08T02:05:31.711542+00:00",
+          "id": "ms_negative_self_comparison",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text express a negative comparison of oneself with others, for example feeling less capable than other students?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_inadequacy_loop"
+          ],
+          "specification_hash": "d2072d974b3748a2e1b710ea3fcaa928551122d40ea9a6b09c50fd0477b9bd19",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        },
+        "external_cause": {
+          "construct_id": "external_cause_framing",
+          "created_at": "2026-09-08T02:05:31.688946+00:00",
+          "id": "ms_external_cause_framing",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text frame academic difficulty as external to the self, for example being buried under assignments, facing a large pile of work, or being pressed by deadlines?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_inadequacy_loop",
+            "pred_monitoring_drains"
+          ],
+          "specification_hash": "30f104e6866e99c90617e7de003bf0f16a7779130e4006aef6342de97909e23e",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        },
+        "monitoring": {
+          "construct_id": "self_monitoring",
+          "created_at": "2026-09-08T02:05:31.700232+00:00",
+          "id": "ms_self_monitoring",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text describe self-monitoring or mistake-tracking, for example trying to stay on top of everything or repeatedly making mistakes?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_inadequacy_loop"
+          ],
+          "specification_hash": "c548bd3f80edfd8cb50537be89b3560a5e5eef50d7d5dc0cbd3ee9b5f02c60fd",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        },
+        "self_inadequacy": {
+          "construct_id": "self_inadequacy_framing",
+          "created_at": "2026-09-08T02:05:31.678512+00:00",
+          "id": "ms_self_inadequacy_framing",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text frame academic difficulty as evidence of personal inadequacy, for example feeling weaker, less capable, embarrassed, or not good enough?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_inadequacy_loop",
+            "pred_monitoring_drains"
+          ],
+          "specification_hash": "ed4c742c7210250220b463f7000415f0b505b34df866e60be12255536b95a9a2",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        }
+      },
+      "missing_measurement_constructs": [],
+      "population": {
+        "exclude": [],
+        "include": "all_valid_records"
+      },
+      "prediction_id": "pred_inadequacy_loop",
+      "readiness": "ready",
+      "required_fields": [
+        "record_id",
+        "text_review"
+      ],
+      "specification_hash": "0162ff37e00f1bff22f278173a525fec34cdf89a55a6dbfd5b8e8c524c6765ea",
+      "template_id": "explicit_group_prevalence_contrast_v1",
+      "unresolved": []
+    },
+    {
+      "comparison": {
+        "estimand": "outcome_prevalence_difference",
+        "group_a": "expression_group_a_is_true_and_group_b_is_false",
+        "group_b": "expression_group_b_is_true_and_group_a_is_false"
+      },
+      "created_at": "2026-09-08T02:47:44.442370+00:00",
+      "decision_rule": {
+        "consistent_when": "observed_difference_positive",
+        "contradicted_when": "observed_difference_non_positive",
+        "not_testable_when": "comparison_group_empty_or_required_field_missing",
+        "type": "explicit_group_directional_prevalence"
+      },
+      "expressions": {
+        "group_a": {
+          "op": "all",
+          "operands": [
+            {
+              "measurement": "self_inadequacy",
+              "op": "measurement"
+            },
+            {
+              "op": "not",
+              "operand": {
+                "measurement": "external_cause",
+                "op": "measurement"
+              }
+            }
+          ]
+        },
+        "group_b": {
+          "op": "all",
+          "operands": [
+            {
+              "measurement": "external_cause",
+              "op": "measurement"
+            },
+            {
+              "op": "not",
+              "operand": {
+                "measurement": "self_inadequacy",
+                "op": "measurement"
+              }
+            }
+          ]
+        },
+        "outcome": {
+          "measurement": "depletion",
+          "op": "measurement"
+        }
+      },
+      "hypotheses": {
+        "expected": "observed_difference_positive",
+        "opposite": "observed_difference_non_positive"
+      },
+      "id": "fals_pred_monitoring_drains",
+      "measurable_implication": {
+        "condition": "condition",
+        "outcome": "outcome",
+        "relation": "higher_prevalence"
+      },
+      "measurement": {
+        "depletion": "ms_depletion",
+        "external_cause": "ms_external_cause_framing",
+        "self_inadequacy": "ms_self_inadequacy_framing"
+      },
+      "measurement_protocol": "frozen_llm_question_v1",
+      "measurement_rule_snapshot": {},
+      "measurement_specification_snapshot": {
+        "depletion": {
+          "construct_id": "depletion",
+          "created_at": "2026-09-08T02:05:31.645065+00:00",
+          "id": "ms_depletion",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text express feeling depleted, for example drained, numb, tired, exhausted, unable to rest, or unable to disconnect?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_burden_depletion",
+            "pred_intrusion_cooccur",
+            "pred_monitoring_drains"
+          ],
+          "specification_hash": "8fa8074fd3d86cbbb9afbf91eb41a1c47305674627564669cea66c4fbf5c29eb",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        },
+        "external_cause": {
+          "construct_id": "external_cause_framing",
+          "created_at": "2026-09-08T02:05:31.688946+00:00",
+          "id": "ms_external_cause_framing",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text frame academic difficulty as external to the self, for example being buried under assignments, facing a large pile of work, or being pressed by deadlines?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_inadequacy_loop",
+            "pred_monitoring_drains"
+          ],
+          "specification_hash": "30f104e6866e99c90617e7de003bf0f16a7779130e4006aef6342de97909e23e",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        },
+        "self_inadequacy": {
+          "construct_id": "self_inadequacy_framing",
+          "created_at": "2026-09-08T02:05:31.678512+00:00",
+          "id": "ms_self_inadequacy_framing",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text frame academic difficulty as evidence of personal inadequacy, for example feeling weaker, less capable, embarrassed, or not good enough?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_inadequacy_loop",
+            "pred_monitoring_drains"
+          ],
+          "specification_hash": "ed4c742c7210250220b463f7000415f0b505b34df866e60be12255536b95a9a2",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        }
+      },
+      "missing_measurement_constructs": [],
+      "population": {
+        "exclude": [],
+        "include": "all_valid_records"
+      },
+      "prediction_id": "pred_monitoring_drains",
+      "readiness": "ready",
+      "required_fields": [
+        "record_id",
+        "text_review"
+      ],
+      "specification_hash": "7e4d90b24983d6e73fa6037de6692f9b1b36d8aad6cb736d64778dc06dbbc338",
+      "template_id": "explicit_group_prevalence_contrast_v1",
+      "unresolved": []
+    },
+    {
+      "comparison": {
+        "estimand": "outcome_prevalence_difference",
+        "group_a": "expression_group_a_is_true_and_group_b_is_false",
+        "group_b": "expression_group_b_is_true_and_group_a_is_false"
+      },
+      "created_at": "2026-09-08T02:47:44.463332+00:00",
+      "decision_rule": {
+        "consistent_when": "observed_difference_positive",
+        "contradicted_when": "observed_difference_non_positive",
+        "not_testable_when": "comparison_group_empty_or_required_field_missing",
+        "type": "explicit_group_directional_prevalence"
+      },
+      "expressions": {
+        "group_a": {
+          "measurement": "resttime_intrusion",
+          "op": "measurement"
+        },
+        "group_b": {
+          "op": "all",
+          "operands": [
+            {
+              "measurement": "study_time_worry",
+              "op": "measurement"
+            },
+            {
+              "op": "not",
+              "operand": {
+                "measurement": "resttime_intrusion",
+                "op": "measurement"
+              }
+            }
+          ]
+        },
+        "outcome": {
+          "measurement": "depletion",
+          "op": "measurement"
+        }
+      },
+      "hypotheses": {
+        "expected": "observed_difference_positive",
+        "opposite": "observed_difference_non_positive"
+      },
+      "id": "fals_pred_burden_depletion",
+      "measurable_implication": {
+        "condition": "condition",
+        "outcome": "outcome",
+        "relation": "higher_prevalence"
+      },
+      "measurement": {
+        "depletion": "ms_depletion",
+        "resttime_intrusion": "ms_resttime_intrusion",
+        "study_time_worry": "ms_study_time_worry"
+      },
+      "measurement_protocol": "frozen_llm_question_v1",
+      "measurement_rule_snapshot": {},
+      "measurement_specification_snapshot": {
+        "depletion": {
+          "construct_id": "depletion",
+          "created_at": "2026-09-08T02:05:31.645065+00:00",
+          "id": "ms_depletion",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text express feeling depleted, for example drained, numb, tired, exhausted, unable to rest, or unable to disconnect?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_burden_depletion",
+            "pred_intrusion_cooccur",
+            "pred_monitoring_drains"
+          ],
+          "specification_hash": "8fa8074fd3d86cbbb9afbf91eb41a1c47305674627564669cea66c4fbf5c29eb",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        },
+        "resttime_intrusion": {
+          "construct_id": "resttime_intrusion",
+          "created_at": "2026-09-08T02:05:31.594656+00:00",
+          "id": "ms_resttime_intrusion",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text describe mental academic activity (e.g., worrying, planning, or mentally going through schoolwork) occurring during a non-study context such as rest, leisure, family time, or downtime?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_burden_depletion",
+            "pred_intrusion_cooccur",
+            "pred_resttime_marker"
+          ],
+          "specification_hash": "e148bd59d01ef12273205ec811874e4a9dcfcdf9390d8e441f8617c093a311df",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        },
+        "study_time_worry": {
+          "construct_id": "study_time_worry",
+          "created_at": "2026-09-08T02:05:31.744300+00:00",
+          "id": "ms_study_time_worry",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text express worry or mental strain that occurs while actively studying, doing homework, or planning academic work?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_burden_depletion"
+          ],
+          "specification_hash": "7785559d2f50ec24ad00ab585f10daf124a5df12e3625fda56a8bf06e0e4bcc1",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        }
+      },
+      "missing_measurement_constructs": [],
+      "population": {
+        "exclude": [],
+        "include": "all_valid_records"
+      },
+      "prediction_id": "pred_burden_depletion",
+      "readiness": "ready",
+      "required_fields": [
+        "record_id",
+        "text_review"
+      ],
+      "specification_hash": "6a2ee1402311a4401e7284d0c92240f0bdf5ef3166ddc8571c3a1c7f12bf1514",
+      "template_id": "explicit_group_prevalence_contrast_v1",
+      "unresolved": []
+    },
+    {
+      "comparison": {
+        "estimand": "outcome_prevalence_difference",
+        "group_a": "expression_group_a_is_true_and_group_b_is_false",
+        "group_b": "expression_group_b_is_true_and_group_a_is_false"
+      },
+      "created_at": "2026-09-08T02:47:44.477742+00:00",
+      "decision_rule": {
+        "consistent_when": "observed_difference_positive",
+        "contradicted_when": "observed_difference_non_positive",
+        "not_testable_when": "comparison_group_empty_or_required_field_missing",
+        "type": "explicit_group_directional_prevalence"
+      },
+      "expressions": {
+        "group_a": {
+          "op": "all",
+          "operands": [
+            {
+              "measurement": "meaning_loss",
+              "op": "measurement"
+            },
+            {
+              "op": "not",
+              "operand": {
+                "measurement": "workload_pressure",
+                "op": "measurement"
+              }
+            }
+          ]
+        },
+        "group_b": {
+          "op": "all",
+          "operands": [
+            {
+              "measurement": "workload_pressure",
+              "op": "measurement"
+            },
+            {
+              "op": "not",
+              "operand": {
+                "measurement": "meaning_loss",
+                "op": "measurement"
+              }
+            }
+          ]
+        },
+        "outcome": {
+          "measurement": "automatic_engagement",
+          "op": "measurement"
+        }
+      },
+      "hypotheses": {
+        "expected": "observed_difference_positive",
+        "opposite": "observed_difference_non_positive"
+      },
+      "id": "fals_pred_meaning_collapse",
+      "measurable_implication": {
+        "condition": "condition",
+        "outcome": "outcome",
+        "relation": "higher_prevalence"
+      },
+      "measurement": {
+        "automatic_engagement": "ms_automatic_engagement",
+        "meaning_loss": "ms_meaning_loss",
+        "workload_pressure": "ms_workload_pressure"
+      },
+      "measurement_protocol": "frozen_llm_question_v1",
+      "measurement_rule_snapshot": {},
+      "measurement_specification_snapshot": {
+        "automatic_engagement": {
+          "construct_id": "automatic_engagement",
+          "created_at": "2026-09-08T02:05:31.733442+00:00",
+          "id": "ms_automatic_engagement",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text describe engaging with schoolwork automatically or with low effort, e.g., going through the motions, doing it without thinking, or barely caring when doing it?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_anxiety_attenuated",
+            "pred_meaning_collapse"
+          ],
+          "specification_hash": "140f8dfe9bb3a525f4d9245382000cb6da740123a5e1a52cdf0bc47073f57f3d",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        },
+        "meaning_loss": {
+          "construct_id": "meaning_loss",
+          "created_at": "2026-09-08T02:05:31.722059+00:00",
+          "id": "ms_meaning_loss",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text express a loss of meaning for schoolwork, e.g., schoolwork no longer feels meaningful or enjoying learning has faded away?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_anxiety_attenuated",
+            "pred_meaning_collapse",
+            "pred_worry_tiredness"
+          ],
+          "specification_hash": "276fbaba292c502c31d8e5ef005d4250242a33e75b68f5886cd0371192b2c85c",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        },
+        "workload_pressure": {
+          "construct_id": "workload_pressure",
+          "created_at": "2026-09-08T02:05:31.756218+00:00",
+          "id": "ms_workload_pressure",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text express pressure from the quantity or burden of academic work, e.g., being buried under assignments or facing a pile of work that never shrinks?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_meaning_collapse"
+          ],
+          "specification_hash": "6ffd06b1041a3959647ab6b5dc733c6c58f858874da986d9fd723ed8b8ef0c35",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        }
+      },
+      "missing_measurement_constructs": [],
+      "population": {
+        "exclude": [],
+        "include": "all_valid_records"
+      },
+      "prediction_id": "pred_meaning_collapse",
+      "readiness": "ready",
+      "required_fields": [
+        "record_id",
+        "text_review"
+      ],
+      "specification_hash": "4018347f418743804028b5d765ce0f14b9956c315faf94b361e6103c01acb6af",
+      "template_id": "explicit_group_prevalence_contrast_v1",
+      "unresolved": []
+    },
+    {
+      "comparison": {
+        "estimand": "outcome_prevalence_difference",
+        "group_a": "expression_group_a_is_true_and_group_b_is_false",
+        "group_b": "expression_group_b_is_true_and_group_a_is_false"
+      },
+      "created_at": "2026-09-08T02:47:44.490631+00:00",
+      "decision_rule": {
+        "consistent_when": "observed_difference_positive",
+        "contradicted_when": "observed_difference_non_positive",
+        "not_testable_when": "comparison_group_empty_or_required_field_missing",
+        "type": "explicit_group_directional_prevalence"
+      },
+      "expressions": {
+        "group_a": {
+          "op": "all",
+          "operands": [
+            {
+              "measurement": "fear",
+              "op": "measurement"
+            },
+            {
+              "measurement": "meaning_loss",
+              "op": "measurement"
+            }
+          ]
+        },
+        "group_b": {
+          "op": "all",
+          "operands": [
+            {
+              "measurement": "fear",
+              "op": "measurement"
+            },
+            {
+              "op": "not",
+              "operand": {
+                "measurement": "meaning_loss",
+                "op": "measurement"
+              }
+            }
+          ]
+        },
+        "outcome": {
+          "measurement": "tiredness_of_caring",
+          "op": "measurement"
+        }
+      },
+      "hypotheses": {
+        "expected": "observed_difference_positive",
+        "opposite": "observed_difference_non_positive"
+      },
+      "id": "fals_pred_anxiety_attenuated",
+      "measurable_implication": {
+        "condition": "condition",
+        "outcome": "outcome",
+        "relation": "higher_prevalence"
+      },
+      "measurement": {
+        "fear": "ms_fear_of_failure",
+        "meaning_loss": "ms_meaning_loss",
+        "tiredness_of_caring": "ms_tiredness_of_caring"
+      },
+      "measurement_protocol": "frozen_llm_question_v1",
+      "measurement_rule_snapshot": {},
+      "measurement_specification_snapshot": {
+        "fear": {
+          "construct_id": "fear_of_failure",
+          "created_at": "2026-09-08T02:05:31.656982+00:00",
+          "id": "ms_fear_of_failure",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text express fear, worry, or dread specifically about failing or about negative academic outcomes?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_anxiety_attenuated",
+            "pred_worry_tiredness"
+          ],
+          "specification_hash": "13fa085e9f03a31f418475ff14ab4b1224cb3a7e2e55b2c8a473e067f20a406c",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        },
+        "meaning_loss": {
+          "construct_id": "meaning_loss",
+          "created_at": "2026-09-08T02:05:31.722059+00:00",
+          "id": "ms_meaning_loss",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text express a loss of meaning for schoolwork, e.g., schoolwork no longer feels meaningful or enjoying learning has faded away?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_anxiety_attenuated",
+            "pred_meaning_collapse",
+            "pred_worry_tiredness"
+          ],
+          "specification_hash": "276fbaba292c502c31d8e5ef005d4250242a33e75b68f5886cd0371192b2c85c",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        },
+        "tiredness_of_caring": {
+          "construct_id": "tiredness_of_caring",
+          "created_at": "2026-09-08T02:05:31.667584+00:00",
+          "id": "ms_tiredness_of_caring",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text express tiredness of caring, e.g., barely caring, being tired of caring, or caring less than before?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_anxiety_attenuated",
+            "pred_worry_tiredness"
+          ],
+          "specification_hash": "32a80dfd4be6b6eab0f482bf5ff1a0edb61dc21aa629e64e56404f2913a49b66",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        }
+      },
+      "missing_measurement_constructs": [],
+      "population": {
+        "exclude": [],
+        "include": "all_valid_records"
+      },
+      "prediction_id": "pred_anxiety_attenuated",
+      "readiness": "ready",
+      "required_fields": [
+        "record_id",
+        "text_review"
+      ],
+      "specification_hash": "48996107dd22bd0da323b770e291dab501d8d575702b06e141b30ec6c1f4f9e1",
+      "template_id": "explicit_group_prevalence_contrast_v1",
+      "unresolved": []
+    },
+    {
+      "comparison": {
+        "estimand": "outcome_prevalence_difference",
+        "group_a": "expression_group_a_is_true_and_group_b_is_false",
+        "group_b": "expression_group_b_is_true_and_group_a_is_false"
+      },
+      "created_at": "2026-09-08T03:28:49.272759+00:00",
+      "decision_rule": {
+        "consistent_when": "observed_difference_positive",
+        "contradicted_when": "observed_difference_non_positive",
+        "not_testable_when": "comparison_group_empty_or_required_field_missing",
+        "type": "explicit_group_directional_prevalence"
+      },
+      "expressions": {
+        "group_a": {
+          "minimum": 3,
+          "op": "at_least",
+          "operands": [
+            {
+              "measurement": "emotional_distress",
+              "op": "measurement"
+            },
+            {
+              "measurement": "anxiety_or_stress",
+              "op": "measurement"
+            },
+            {
+              "measurement": "exhaustion",
+              "op": "measurement"
+            },
+            {
+              "measurement": "self_doubt",
+              "op": "measurement"
+            }
+          ]
+        },
+        "group_b": {
+          "op": "not",
+          "operand": {
+            "minimum": 3,
+            "op": "at_least",
+            "operands": [
+              {
+                "measurement": "emotional_distress",
+                "op": "measurement"
+              },
+              {
+                "measurement": "anxiety_or_stress",
+                "op": "measurement"
+              },
+              {
+                "measurement": "exhaustion",
+                "op": "measurement"
+              },
+              {
+                "measurement": "self_doubt",
+                "op": "measurement"
+              }
+            ]
+          }
+        },
+        "outcome": {
+          "measurement": "intrusion",
+          "op": "measurement"
+        }
+      },
+      "hypotheses": {
+        "expected": "observed_difference_positive",
+        "opposite": "observed_difference_non_positive"
+      },
+      "id": "fals_pred_resttime_marker",
+      "measurable_implication": {
+        "condition": "condition",
+        "outcome": "outcome",
+        "relation": "higher_prevalence"
+      },
+      "measurement": {
+        "anxiety_or_stress": "ms_anxiety_or_stress",
+        "emotional_distress": "ms_emotional_distress",
+        "exhaustion": "ms_exhaustion",
+        "intrusion": "ms_resttime_intrusion",
+        "self_doubt": "ms_self_doubt"
+      },
+      "measurement_protocol": "frozen_llm_question_v1",
+      "measurement_rule_snapshot": {},
+      "measurement_specification_snapshot": {
+        "anxiety_or_stress": {
+          "construct_id": "anxiety_or_stress",
+          "created_at": "2026-09-08T03:29:25.443436+00:00",
+          "id": "ms_anxiety_or_stress",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text express anxiety or stress, e.g., worry, nervous tension, being tense, or feeling stressed?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_resttime_marker"
+          ],
+          "specification_hash": "f572787c21b875ccf8ab304ed5126bdb65c6c0afe61442ab2f7581f83c2e8456",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        },
+        "emotional_distress": {
+          "construct_id": "emotional_distress",
+          "created_at": "2026-09-08T02:05:31.769420+00:00",
+          "id": "ms_emotional_distress",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text express emotional distress, e.g., sadness, anxiety, stress, upset, or feeling overwhelmed by feelings?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_resttime_marker"
+          ],
+          "specification_hash": "c7e4eee2f77562bb53b02eeba6704d77df2f29642bc42cd87200a6850631dcc4",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        },
+        "exhaustion": {
+          "construct_id": "exhaustion",
+          "created_at": "2026-09-08T02:05:31.784058+00:00",
+          "id": "ms_exhaustion",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text express exhaustion or physical/mental fatigue, e.g., being tired, worn out, or lacking energy?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_resttime_marker"
+          ],
+          "specification_hash": "cd78070e2d4b8d796d815f12ae95be20a45f4a854914acb9a0e93083abd96406",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        },
+        "intrusion": {
+          "construct_id": "resttime_intrusion",
+          "created_at": "2026-09-08T02:05:31.594656+00:00",
+          "id": "ms_resttime_intrusion",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text describe mental academic activity (e.g., worrying, planning, or mentally going through schoolwork) occurring during a non-study context such as rest, leisure, family time, or downtime?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_burden_depletion",
+            "pred_intrusion_cooccur",
+            "pred_resttime_marker"
+          ],
+          "specification_hash": "e148bd59d01ef12273205ec811874e4a9dcfcdf9390d8e441f8617c093a311df",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        },
+        "self_doubt": {
+          "construct_id": "self_doubt",
+          "created_at": "2026-09-08T02:05:31.796804+00:00",
+          "id": "ms_self_doubt",
+          "labels": [
+            "PRESENT",
+            "ABSENT",
+            "UNCERTAIN"
+          ],
+          "max_tokens": 16,
+          "measurement_question": "Does the text express self-doubt, e.g., doubting one's own abilities, confidence, or worth as a student?",
+          "model_id": "qwen3.6-27b-fp8",
+          "model_revision": "qwen3.6-27b-fp8",
+          "prompt_version": "frozen-measurement-v1",
+          "source_prediction_ids": [
+            "pred_resttime_marker"
+          ],
+          "specification_hash": "63aa8717c86bb047bcc097aaf9a47d039856b7fa740ae0759e867853b3abc1d8",
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "uncertain_handling": "exclude"
+        }
+      },
+      "missing_measurement_constructs": [],
+      "population": {
+        "exclude": [],
+        "include": "all_valid_records"
+      },
+      "prediction_id": "pred_resttime_marker",
+      "readiness": "ready",
+      "required_fields": [
+        "record_id",
+        "text_review"
+      ],
+      "specification_hash": "b2cda9a7b33544648d6ba8c2078b52cc33b83283d9f13f07a2ce3ee64b37c928",
+      "template_id": "explicit_group_prevalence_contrast_v1",
+      "unresolved": []
+    }
+  ]
+}

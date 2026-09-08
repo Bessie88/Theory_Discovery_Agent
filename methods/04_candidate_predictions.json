@@ -1,0 +1,124 @@
+{
+  "predictions": [
+    {
+      "contradiction_criteria": "The two conditions show equal or reversed depletion-statement fractions, so intrusion statements are not differentially associated with depletion.",
+      "created_at": "2026-09-06T13:00:07.463287+00:00",
+      "id": "pred_intrusion_cooccur",
+      "law_id": "intrusion_cooccurrence",
+      "operational_signals": [
+        "presence of intrusion statement: mental activity during rest/leisure/family time",
+        "presence of depletion statement: drained, numb, tired, unable to disconnect, cannot rest"
+      ],
+      "specific_prediction": "In the held-out partition, narrative chunks containing at least one rest-or-leisure intrusion statement (worry, planning, or mental studying during non-study time) will contain at least one depletion statement (drained, unable to rest, numb, tired, unable to disconnect) more often than chunks without an intrusion statement.",
+      "strong_test_requirement": "Compare the fraction of chunks with a depletion statement between intrusion-present and intrusion-absent chunks within the same held-out partition.",
+      "support_criteria": "The intrusion-present chunk condition shows a clearly higher fraction of depletion statements than the intrusion-absent condition.",
+      "theory_id": "intrusion_depletion_theory"
+    },
+    {
+      "contradiction_criteria": "Co-mention rates are equal or reversed across conditions, so fear of failure is not differentially paired with the tiredness-of-caring profile.",
+      "created_at": "2026-09-06T13:00:07.476295+00:00",
+      "id": "pred_worry_tiredness",
+      "law_id": "worry_tiredness_link",
+      "operational_signals": [
+        "fear of failure / scared of failing",
+        "reduced meaning / doesn't feel meaningful",
+        "tired of caring / can barely care"
+      ],
+      "specific_prediction": "Held-out chunks containing fear-of-failure statements will co-mention reduced-meaning or tiredness-of-caring statements more often than chunks with no fear-of-failure statement.",
+      "strong_test_requirement": "Adequate counts of fear-of-failure-present and fear-of-failure-absent chunks with independent coding of co-mentioned statements.",
+      "support_criteria": "Co-mention rate of reduced-meaning/tiredness-of-caring statements is substantially higher in the fear-of-failure-present condition.",
+      "theory_id": "intrusion_depletion_theory"
+    },
+    {
+      "contradiction_criteria": "No framing difference in joint co-mention, so the appraisal-monitoring loop is not a distinctive feature of self-inadequacy-framed burnout.",
+      "created_at": "2026-09-06T13:00:07.486403+00:00",
+      "id": "pred_inadequacy_loop",
+      "law_id": "inadequacy_monitoring",
+      "operational_signals": [
+        "self-inadequacy framing: weaker, less capable, embarrassing, not good enough",
+        "external framing: buried under assignments, deadlines, pile of work",
+        "self-monitoring: keep making mistakes, try to stay on top",
+        "negative comparison: less capable than other students"
+      ],
+      "specific_prediction": "Held-out chunks framing academic difficulty as evidence of personal inadequacy (weaker, less capable, embarrassing) will co-mention both a self-monitoring or mistake-tracking signal and a negative self-comparison signal more often than chunks framing difficulty as external (workload, deadlines).",
+      "strong_test_requirement": "Three-way coding of framing type (self-cause vs external-cause vs neither) and co-mention of monitoring and comparison signals in the same chunk.",
+      "support_criteria": "The self-inadequacy framing condition shows clearly higher joint co-mention of monitoring and comparison signals than the external-cause condition.",
+      "theory_id": "selfappraisal_drain_theory"
+    },
+    {
+      "contradiction_criteria": "Equal or reversed depletion co-mention across framing conditions, so the appraisal-to-depletion route is not supported.",
+      "created_at": "2026-09-06T13:00:07.496360+00:00",
+      "id": "pred_monitoring_drains",
+      "law_id": "monitoring_drains",
+      "operational_signals": [
+        "self-inadequacy framing as above",
+        "external-cause framing as above",
+        "depletion: drained, numb, automatic, barely care, going through it"
+      ],
+      "specific_prediction": "Held-out chunks with self-inadequacy framing will co-mention depletion statements (drained, numb, automatic, barely care) more often than chunks with only external-cause framing.",
+      "strong_test_requirement": "Compare depletion co-mention between self-cause and external-cause framing conditions with sufficient counts in each.",
+      "support_criteria": "Self-cause framing chunks show substantially higher depletion co-mention than external-cause framing chunks.",
+      "theory_id": "selfappraisal_drain_theory"
+    },
+    {
+      "contradiction_criteria": "High-distress chunks have no higher rest-time-intrusion prevalence than lower-distress chunks.",
+      "created_at": "2026-09-06T13:00:07.511246+00:00",
+      "id": "pred_resttime_marker",
+      "law_id": "resttime_marker",
+      "operational_signals": [
+        "high-distress classification: at least three of the four thematic nodes (emotional distress, anxiety or stress, exhaustion or fatigue, and self-doubt)",
+        "lower-distress classification: fewer than three of the four thematic nodes",
+        "rest/leisure/family/downtime context with ongoing mental academic activity"
+      ],
+      "specific_prediction": "In the held-out partition, chunks classified as high-distress—clearly expressing at least three of the four distress themes—will contain rest-time or leisure-time intrusion statements more often than chunks classified as lower-distress.",
+      "strong_test_requirement": "Independently classify all held-out chunks as high-distress or lower-distress from the four thematic nodes and code intrusion-statement presence, then compare the two group prevalences.",
+      "support_criteria": "High-distress chunks have a higher rest-time-intrusion prevalence than lower-distress chunks.",
+      "theory_id": "resttime_intrusion_theory"
+    },
+    {
+      "contradiction_criteria": "The two conditions show equivalent depletion co-mention fractions, so rest-time intrusion is not a more specific depletion marker than study-time worry.",
+      "created_at": "2026-09-06T13:00:07.521966+00:00",
+      "id": "pred_burden_depletion",
+      "law_id": "burden_depletion",
+      "operational_signals": [
+        "rest-time intrusion (mental activity during rest/leisure)",
+        "study-time worry (worry while actively studying or planning)",
+        "depletion statements as in pred_intrusion_cooccur"
+      ],
+      "specific_prediction": "Rest-time intrusion statements will be differentially associated with depletion statements in the same chunk, whereas study-time worry statements will show a weaker differential association with depletion.",
+      "strong_test_requirement": "Differential comparison: compute the depletion co-mention fraction for chunks with rest-time intrusion and for chunks with only study-time worry, within the same partition.",
+      "support_criteria": "The rest-time intrusion condition shows a meaningfully higher depletion co-mention fraction than the study-time-only worry condition.",
+      "theory_id": "resttime_intrusion_theory"
+    },
+    {
+      "contradiction_criteria": "Equal or reversed co-mention rates, so meaning loss is not differentially associated with automatic engagement.",
+      "created_at": "2026-09-06T13:00:07.531837+00:00",
+      "id": "pred_meaning_collapse",
+      "law_id": "meaning_collapse_first",
+      "operational_signals": [
+        "meaning loss: doesn't feel meaningful, used to like learning and now can't care, automatic",
+        "barely caring / going through it automatically",
+        "workload pressure without meaning loss: buried under assignments, pile never gets smaller"
+      ],
+      "specific_prediction": "Held-out chunks reporting loss of meaning for schoolwork will co-mention automatic or barely-caring engagement statements more often than chunks reporting workload pressure without a meaning-loss statement.",
+      "strong_test_requirement": "Two-condition comparison with adequate counts; meaning-loss-present vs workload-only-present chunks coded for automatic-engagement co-mention.",
+      "support_criteria": "Meaning-loss chunks show substantially higher automatic-engagement co-mention than workload-only chunks.",
+      "theory_id": "meaning_collapse_theory"
+    },
+    {
+      "contradiction_criteria": "Equal or lower tiredness-of-caring co-mention in the combined condition, so the anxiety-attenuation claim is contradicted.",
+      "created_at": "2026-09-06T13:00:07.542492+00:00",
+      "id": "pred_anxiety_attenuated",
+      "law_id": "anxiety_attenuated",
+      "operational_signals": [
+        "fear of failure present",
+        "loss of meaning present or absent",
+        "tired of caring / can barely care / automatic engagement"
+      ],
+      "specific_prediction": "Held-out chunks reporting both fear of failure and loss of meaning will contain a tiredness-of-caring or barely-caring statement more often than chunks reporting fear of failure alone.",
+      "strong_test_requirement": "Compare the tiredness-of-caring co-mention fraction between the fear-of-failure-plus-meaning-loss condition and the fear-of-failure-only condition.",
+      "support_criteria": "The combined condition shows substantially higher tiredness-of-caring co-mention than the fear-of-failure-only condition.",
+      "theory_id": "meaning_collapse_theory"
+    }
+  ]
+}

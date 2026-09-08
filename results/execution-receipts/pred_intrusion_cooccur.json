@@ -1,0 +1,14 @@
+{
+  "validation_results": [
+    {
+      "evidence": [],
+      "execution_artifact": "validation-execution/pred_intrusion_cooccur.py",
+      "falsification_specification_id": "fals_pred_intrusion_cooccur",
+      "id": "validation_pred_intrusion_cooccur",
+      "prediction_id": "pred_intrusion_cooccur",
+      "specification_hash": "7485615623fa3e0bb582340d940c8f2e636c43dad5d715a2599d96a120bba5ef",
+      "status": "prediction_consistent",
+      "summary": "Frozen directional comparison: outcome prevalence was 0.823529 when the condition was PRESENT and 0.296791 when it was ABSENT."
+    }
+  ]
+}

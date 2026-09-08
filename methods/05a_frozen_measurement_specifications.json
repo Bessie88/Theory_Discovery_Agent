@@ -1,0 +1,367 @@
+{
+  "measurement_specifications": [
+    {
+      "construct_id": "resttime_intrusion",
+      "created_at": "2026-09-08T02:05:31.594656+00:00",
+      "id": "ms_resttime_intrusion",
+      "labels": [
+        "PRESENT",
+        "ABSENT",
+        "UNCERTAIN"
+      ],
+      "max_tokens": 16,
+      "measurement_question": "Does the text describe mental academic activity (e.g., worrying, planning, or mentally going through schoolwork) occurring during a non-study context such as rest, leisure, family time, or downtime?",
+      "model_id": "qwen3.6-27b-fp8",
+      "model_revision": "qwen3.6-27b-fp8",
+      "prompt_version": "frozen-measurement-v1",
+      "source_prediction_ids": [
+        "pred_burden_depletion",
+        "pred_intrusion_cooccur",
+        "pred_resttime_marker"
+      ],
+      "specification_hash": "e148bd59d01ef12273205ec811874e4a9dcfcdf9390d8e441f8617c093a311df",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "uncertain_handling": "exclude"
+    },
+    {
+      "construct_id": "depletion",
+      "created_at": "2026-09-08T02:05:31.645065+00:00",
+      "id": "ms_depletion",
+      "labels": [
+        "PRESENT",
+        "ABSENT",
+        "UNCERTAIN"
+      ],
+      "max_tokens": 16,
+      "measurement_question": "Does the text express feeling depleted, for example drained, numb, tired, exhausted, unable to rest, or unable to disconnect?",
+      "model_id": "qwen3.6-27b-fp8",
+      "model_revision": "qwen3.6-27b-fp8",
+      "prompt_version": "frozen-measurement-v1",
+      "source_prediction_ids": [
+        "pred_burden_depletion",
+        "pred_intrusion_cooccur",
+        "pred_monitoring_drains"
+      ],
+      "specification_hash": "8fa8074fd3d86cbbb9afbf91eb41a1c47305674627564669cea66c4fbf5c29eb",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "uncertain_handling": "exclude"
+    },
+    {
+      "construct_id": "fear_of_failure",
+      "created_at": "2026-09-08T02:05:31.656982+00:00",
+      "id": "ms_fear_of_failure",
+      "labels": [
+        "PRESENT",
+        "ABSENT",
+        "UNCERTAIN"
+      ],
+      "max_tokens": 16,
+      "measurement_question": "Does the text express fear, worry, or dread specifically about failing or about negative academic outcomes?",
+      "model_id": "qwen3.6-27b-fp8",
+      "model_revision": "qwen3.6-27b-fp8",
+      "prompt_version": "frozen-measurement-v1",
+      "source_prediction_ids": [
+        "pred_anxiety_attenuated",
+        "pred_worry_tiredness"
+      ],
+      "specification_hash": "13fa085e9f03a31f418475ff14ab4b1224cb3a7e2e55b2c8a473e067f20a406c",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "uncertain_handling": "exclude"
+    },
+    {
+      "construct_id": "tiredness_of_caring",
+      "created_at": "2026-09-08T02:05:31.667584+00:00",
+      "id": "ms_tiredness_of_caring",
+      "labels": [
+        "PRESENT",
+        "ABSENT",
+        "UNCERTAIN"
+      ],
+      "max_tokens": 16,
+      "measurement_question": "Does the text express tiredness of caring, e.g., barely caring, being tired of caring, or caring less than before?",
+      "model_id": "qwen3.6-27b-fp8",
+      "model_revision": "qwen3.6-27b-fp8",
+      "prompt_version": "frozen-measurement-v1",
+      "source_prediction_ids": [
+        "pred_anxiety_attenuated",
+        "pred_worry_tiredness"
+      ],
+      "specification_hash": "32a80dfd4be6b6eab0f482bf5ff1a0edb61dc21aa629e64e56404f2913a49b66",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "uncertain_handling": "exclude"
+    },
+    {
+      "construct_id": "self_inadequacy_framing",
+      "created_at": "2026-09-08T02:05:31.678512+00:00",
+      "id": "ms_self_inadequacy_framing",
+      "labels": [
+        "PRESENT",
+        "ABSENT",
+        "UNCERTAIN"
+      ],
+      "max_tokens": 16,
+      "measurement_question": "Does the text frame academic difficulty as evidence of personal inadequacy, for example feeling weaker, less capable, embarrassed, or not good enough?",
+      "model_id": "qwen3.6-27b-fp8",
+      "model_revision": "qwen3.6-27b-fp8",
+      "prompt_version": "frozen-measurement-v1",
+      "source_prediction_ids": [
+        "pred_inadequacy_loop",
+        "pred_monitoring_drains"
+      ],
+      "specification_hash": "ed4c742c7210250220b463f7000415f0b505b34df866e60be12255536b95a9a2",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "uncertain_handling": "exclude"
+    },
+    {
+      "construct_id": "external_cause_framing",
+      "created_at": "2026-09-08T02:05:31.688946+00:00",
+      "id": "ms_external_cause_framing",
+      "labels": [
+        "PRESENT",
+        "ABSENT",
+        "UNCERTAIN"
+      ],
+      "max_tokens": 16,
+      "measurement_question": "Does the text frame academic difficulty as external to the self, for example being buried under assignments, facing a large pile of work, or being pressed by deadlines?",
+      "model_id": "qwen3.6-27b-fp8",
+      "model_revision": "qwen3.6-27b-fp8",
+      "prompt_version": "frozen-measurement-v1",
+      "source_prediction_ids": [
+        "pred_inadequacy_loop",
+        "pred_monitoring_drains"
+      ],
+      "specification_hash": "30f104e6866e99c90617e7de003bf0f16a7779130e4006aef6342de97909e23e",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "uncertain_handling": "exclude"
+    },
+    {
+      "construct_id": "self_monitoring",
+      "created_at": "2026-09-08T02:05:31.700232+00:00",
+      "id": "ms_self_monitoring",
+      "labels": [
+        "PRESENT",
+        "ABSENT",
+        "UNCERTAIN"
+      ],
+      "max_tokens": 16,
+      "measurement_question": "Does the text describe self-monitoring or mistake-tracking, for example trying to stay on top of everything or repeatedly making mistakes?",
+      "model_id": "qwen3.6-27b-fp8",
+      "model_revision": "qwen3.6-27b-fp8",
+      "prompt_version": "frozen-measurement-v1",
+      "source_prediction_ids": [
+        "pred_inadequacy_loop"
+      ],
+      "specification_hash": "c548bd3f80edfd8cb50537be89b3560a5e5eef50d7d5dc0cbd3ee9b5f02c60fd",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "uncertain_handling": "exclude"
+    },
+    {
+      "construct_id": "negative_self_comparison",
+      "created_at": "2026-09-08T02:05:31.711542+00:00",
+      "id": "ms_negative_self_comparison",
+      "labels": [
+        "PRESENT",
+        "ABSENT",
+        "UNCERTAIN"
+      ],
+      "max_tokens": 16,
+      "measurement_question": "Does the text express a negative comparison of oneself with others, for example feeling less capable than other students?",
+      "model_id": "qwen3.6-27b-fp8",
+      "model_revision": "qwen3.6-27b-fp8",
+      "prompt_version": "frozen-measurement-v1",
+      "source_prediction_ids": [
+        "pred_inadequacy_loop"
+      ],
+      "specification_hash": "d2072d974b3748a2e1b710ea3fcaa928551122d40ea9a6b09c50fd0477b9bd19",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "uncertain_handling": "exclude"
+    },
+    {
+      "construct_id": "meaning_loss",
+      "created_at": "2026-09-08T02:05:31.722059+00:00",
+      "id": "ms_meaning_loss",
+      "labels": [
+        "PRESENT",
+        "ABSENT",
+        "UNCERTAIN"
+      ],
+      "max_tokens": 16,
+      "measurement_question": "Does the text express a loss of meaning for schoolwork, e.g., schoolwork no longer feels meaningful or enjoying learning has faded away?",
+      "model_id": "qwen3.6-27b-fp8",
+      "model_revision": "qwen3.6-27b-fp8",
+      "prompt_version": "frozen-measurement-v1",
+      "source_prediction_ids": [
+        "pred_anxiety_attenuated",
+        "pred_meaning_collapse",
+        "pred_worry_tiredness"
+      ],
+      "specification_hash": "276fbaba292c502c31d8e5ef005d4250242a33e75b68f5886cd0371192b2c85c",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "uncertain_handling": "exclude"
+    },
+    {
+      "construct_id": "automatic_engagement",
+      "created_at": "2026-09-08T02:05:31.733442+00:00",
+      "id": "ms_automatic_engagement",
+      "labels": [
+        "PRESENT",
+        "ABSENT",
+        "UNCERTAIN"
+      ],
+      "max_tokens": 16,
+      "measurement_question": "Does the text describe engaging with schoolwork automatically or with low effort, e.g., going through the motions, doing it without thinking, or barely caring when doing it?",
+      "model_id": "qwen3.6-27b-fp8",
+      "model_revision": "qwen3.6-27b-fp8",
+      "prompt_version": "frozen-measurement-v1",
+      "source_prediction_ids": [
+        "pred_anxiety_attenuated",
+        "pred_meaning_collapse"
+      ],
+      "specification_hash": "140f8dfe9bb3a525f4d9245382000cb6da740123a5e1a52cdf0bc47073f57f3d",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "uncertain_handling": "exclude"
+    },
+    {
+      "construct_id": "study_time_worry",
+      "created_at": "2026-09-08T02:05:31.744300+00:00",
+      "id": "ms_study_time_worry",
+      "labels": [
+        "PRESENT",
+        "ABSENT",
+        "UNCERTAIN"
+      ],
+      "max_tokens": 16,
+      "measurement_question": "Does the text express worry or mental strain that occurs while actively studying, doing homework, or planning academic work?",
+      "model_id": "qwen3.6-27b-fp8",
+      "model_revision": "qwen3.6-27b-fp8",
+      "prompt_version": "frozen-measurement-v1",
+      "source_prediction_ids": [
+        "pred_burden_depletion"
+      ],
+      "specification_hash": "7785559d2f50ec24ad00ab585f10daf124a5df12e3625fda56a8bf06e0e4bcc1",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "uncertain_handling": "exclude"
+    },
+    {
+      "construct_id": "workload_pressure",
+      "created_at": "2026-09-08T02:05:31.756218+00:00",
+      "id": "ms_workload_pressure",
+      "labels": [
+        "PRESENT",
+        "ABSENT",
+        "UNCERTAIN"
+      ],
+      "max_tokens": 16,
+      "measurement_question": "Does the text express pressure from the quantity or burden of academic work, e.g., being buried under assignments or facing a pile of work that never shrinks?",
+      "model_id": "qwen3.6-27b-fp8",
+      "model_revision": "qwen3.6-27b-fp8",
+      "prompt_version": "frozen-measurement-v1",
+      "source_prediction_ids": [
+        "pred_meaning_collapse"
+      ],
+      "specification_hash": "6ffd06b1041a3959647ab6b5dc733c6c58f858874da986d9fd723ed8b8ef0c35",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "uncertain_handling": "exclude"
+    },
+    {
+      "construct_id": "emotional_distress",
+      "created_at": "2026-09-08T02:05:31.769420+00:00",
+      "id": "ms_emotional_distress",
+      "labels": [
+        "PRESENT",
+        "ABSENT",
+        "UNCERTAIN"
+      ],
+      "max_tokens": 16,
+      "measurement_question": "Does the text express emotional distress, e.g., sadness, anxiety, stress, upset, or feeling overwhelmed by feelings?",
+      "model_id": "qwen3.6-27b-fp8",
+      "model_revision": "qwen3.6-27b-fp8",
+      "prompt_version": "frozen-measurement-v1",
+      "source_prediction_ids": [
+        "pred_resttime_marker"
+      ],
+      "specification_hash": "c7e4eee2f77562bb53b02eeba6704d77df2f29642bc42cd87200a6850631dcc4",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "uncertain_handling": "exclude"
+    },
+    {
+      "construct_id": "exhaustion",
+      "created_at": "2026-09-08T02:05:31.784058+00:00",
+      "id": "ms_exhaustion",
+      "labels": [
+        "PRESENT",
+        "ABSENT",
+        "UNCERTAIN"
+      ],
+      "max_tokens": 16,
+      "measurement_question": "Does the text express exhaustion or physical/mental fatigue, e.g., being tired, worn out, or lacking energy?",
+      "model_id": "qwen3.6-27b-fp8",
+      "model_revision": "qwen3.6-27b-fp8",
+      "prompt_version": "frozen-measurement-v1",
+      "source_prediction_ids": [
+        "pred_resttime_marker"
+      ],
+      "specification_hash": "cd78070e2d4b8d796d815f12ae95be20a45f4a854914acb9a0e93083abd96406",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "uncertain_handling": "exclude"
+    },
+    {
+      "construct_id": "self_doubt",
+      "created_at": "2026-09-08T02:05:31.796804+00:00",
+      "id": "ms_self_doubt",
+      "labels": [
+        "PRESENT",
+        "ABSENT",
+        "UNCERTAIN"
+      ],
+      "max_tokens": 16,
+      "measurement_question": "Does the text express self-doubt, e.g., doubting one's own abilities, confidence, or worth as a student?",
+      "model_id": "qwen3.6-27b-fp8",
+      "model_revision": "qwen3.6-27b-fp8",
+      "prompt_version": "frozen-measurement-v1",
+      "source_prediction_ids": [
+        "pred_resttime_marker"
+      ],
+      "specification_hash": "63aa8717c86bb047bcc097aaf9a47d039856b7fa740ae0759e867853b3abc1d8",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "uncertain_handling": "exclude"
+    },
+    {
+      "construct_id": "anxiety_or_stress",
+      "created_at": "2026-09-08T03:29:25.443436+00:00",
+      "id": "ms_anxiety_or_stress",
+      "labels": [
+        "PRESENT",
+        "ABSENT",
+        "UNCERTAIN"
+      ],
+      "max_tokens": 16,
+      "measurement_question": "Does the text express anxiety or stress, e.g., worry, nervous tension, being tense, or feeling stressed?",
+      "model_id": "qwen3.6-27b-fp8",
+      "model_revision": "qwen3.6-27b-fp8",
+      "prompt_version": "frozen-measurement-v1",
+      "source_prediction_ids": [
+        "pred_resttime_marker"
+      ],
+      "specification_hash": "f572787c21b875ccf8ab304ed5126bdb65c6c0afe61442ab2f7581f83c2e8456",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "uncertain_handling": "exclude"
+    }
+  ]
+}

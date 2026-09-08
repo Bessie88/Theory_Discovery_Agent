@@ -1,0 +1,60 @@
+{
+  "graph_edges": [
+    {
+      "id": "theme_contains_anxiety",
+      "label": "contains_theme",
+      "source_node_id": "psychological_emotional_distress",
+      "target_node_id": "anxiety_stress_distress"
+    },
+    {
+      "id": "theme_contains_burnout",
+      "label": "contains_theme",
+      "source_node_id": "psychological_emotional_distress",
+      "target_node_id": "burnout_exhaustion_fatigue"
+    },
+    {
+      "id": "theme_contains_self_doubt",
+      "label": "contains_theme",
+      "source_node_id": "psychological_emotional_distress",
+      "target_node_id": "self_doubt_eroded_confidence"
+    }
+  ],
+  "graph_nodes": [
+    {
+      "description": "A large meta-theme in the existing school-burnout graph. It covers students' emotional suffering, distress-related depletion, and negative self-appraisal in relation to academic demands.",
+      "examples": [
+        "I feel buried under assignments from every class, and no matter how much I work, the pile never seems to get smaller.",
+        "When I’m not studying, I’m still mentally studying, planning, or worrying. It’s like school has taken over all my downtime."
+      ],
+      "id": "psychological_emotional_distress",
+      "label": "Psychological and Emotional Distress"
+    },
+    {
+      "description": "This theme captures the psychological and physiological toll of academic demands: feeling overwhelmed or trapped, intrusive worries during rest or leisure, sleep disruption, fear of failure, shame, irritability, and strain on relationships.",
+      "examples": [
+        "I tried to watch a show after dinner, but I kept thinking about the assignment I still haven’t finished.",
+        "Even my free time feels occupied by school."
+      ],
+      "id": "anxiety_stress_distress",
+      "label": "Anxiety, Stress, and Emotional Distress"
+    },
+    {
+      "description": "This theme captures profound physical, cognitive, and emotional depletion caused by academic demands, including feeling drained, numb, unable to rest, and unable to mentally disconnect from school.",
+      "examples": [
+        "Schoolwork doesn’t feel meaningful anymore, so I procrastinate until it’s almost too late. I’m scared of failing, but I’m also tired of caring so much.",
+        "I used to like learning, and now I can barely care enough to open my notebook."
+      ],
+      "id": "burnout_exhaustion_fatigue",
+      "label": "Burnout, Exhaustion, and Fatigue"
+    },
+    {
+      "description": "This theme captures students interpreting academic struggles as evidence of intellectual inadequacy or inferiority. It includes eroded self-trust, peer comparison, shame, helplessness, and feeling incapable of succeeding.",
+      "examples": [
+        "I try to stay on top of everything, but I keep making mistakes and it’s embarrassing. I feel weaker and less capable than the other students.",
+        "It makes me feel like I’m always behind before I even start."
+      ],
+      "id": "self_doubt_eroded_confidence",
+      "label": "Self-Doubt, Inferiority, and Eroded Confidence"
+    }
+  ]
+}

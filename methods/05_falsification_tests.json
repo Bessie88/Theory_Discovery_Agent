@@ -1,0 +1,124 @@
+{
+  "falsification_tests": [
+    {
+      "alternative_hypothesis": "The intrusion-present condition shows a substantially higher fraction of depletion-present chunks than the intrusion-absent condition.",
+      "created_at": "2026-09-06T13:00:40.277732+00:00",
+      "id": "test_intrusion_cooccur",
+      "implementability": "ready",
+      "missing_information": [],
+      "null_hypothesis": "The fraction of depletion-present chunks is equal in the intrusion-present and intrusion-absent conditions.",
+      "prediction_id": "pred_intrusion_cooccur",
+      "relevance": "direct",
+      "required_data": [
+        "record_id",
+        "text_review"
+      ],
+      "test_description": "For each held-out chunk, read text_review and code two indicators. Intrusion-present means the chunk contains at least one statement describing mental academic activity (worry, planning, re-reading, thinking through work) during a non-study context such as rest, leisure, family time, travel, or downtime. Depletion-present means the chunk contains at least one statement of being drained, numb, tired, unable to rest, unable to disconnect, or exhausted. Compare the fraction of chunks that are depletion-present between intrusion-present and intrusion-absent chunks."
+    },
+    {
+      "alternative_hypothesis": "The fear-present condition shows a substantially higher fraction of tiredness-of-caring-present chunks than the fear-absent condition.",
+      "created_at": "2026-09-06T13:00:40.284890+00:00",
+      "id": "test_worry_tiredness",
+      "implementability": "ready",
+      "missing_information": [],
+      "null_hypothesis": "The fraction of tiredness-of-caring-present chunks is equal in the fear-present and fear-absent conditions.",
+      "prediction_id": "pred_worry_tiredness",
+      "relevance": "direct",
+      "required_data": [
+        "record_id",
+        "text_review"
+      ],
+      "test_description": "For each held-out chunk, read text_review and code two indicators. Fear-present means the chunk contains at least one statement about being scared of failing, worried about failing, or dreading outcomes. Tiredness-of-caring-present means the chunk contains at least one statement of reduced meaning (doesn't feel meaningful), tiredness of caring, or barely caring. Compare the fraction of tiredness-of-caring-present chunks between fear-present and fear-absent chunks."
+    },
+    {
+      "alternative_hypothesis": "The self-cause framing class shows a substantially higher joint monitoring-and-comparison fraction than the external-cause class.",
+      "created_at": "2026-09-06T13:00:40.293206+00:00",
+      "id": "test_inadequacy_loop",
+      "implementability": "ready",
+      "missing_information": [],
+      "null_hypothesis": "The joint monitoring-and-comparison fraction is equal across the self-cause, external-cause, and neither framing classes.",
+      "prediction_id": "pred_inadequacy_loop",
+      "relevance": "direct",
+      "required_data": [
+        "record_id",
+        "text_review"
+      ],
+      "test_description": "For each held-out chunk, read text_review and assign a framing class. Self-cause means the chunk frames difficulty as personal inadequacy (weaker, less capable, embarrassing, not good enough). External-cause means the chunk frames difficulty as external (buried under assignments, pile of work, deadlines). Neither means any other framing. Within each class, code two indicators: monitoring-present means at least one self-monitoring or mistake-tracking statement; comparison-present means at least one negative self-comparison statement (less capable than peers). Compare the fraction of chunks that are both monitoring-present and comparison-present across the three framing classes."
+    },
+    {
+      "alternative_hypothesis": "The self-cause condition shows a substantially higher fraction of depletion-present chunks than the external-cause condition.",
+      "created_at": "2026-09-06T13:00:40.300921+00:00",
+      "id": "test_monitoring_drains",
+      "implementability": "ready",
+      "missing_information": [],
+      "null_hypothesis": "The fraction of depletion-present chunks is equal between the self-cause and external-cause framing conditions.",
+      "prediction_id": "pred_monitoring_drains",
+      "relevance": "direct",
+      "required_data": [
+        "record_id",
+        "text_review"
+      ],
+      "test_description": "For each held-out chunk, read text_review and assign a framing class. Self-cause means the chunk frames difficulty as personal inadequacy (weaker, less capable, embarrassing, not good enough). External-cause means the chunk frames difficulty as external (workload, deadlines, pile of work). Exclude chunks in the neither class. Depletion-present means the chunk contains at least one statement of being drained, numb, automatic, barely caring, or going through it. Compare the fraction of depletion-present chunks between the self-cause and external-cause conditions."
+    },
+    {
+      "alternative_hypothesis": "High-distress chunks have a higher rest-time-intrusion-present fraction than lower-distress chunks.",
+      "created_at": "2026-09-06T13:00:40.307626+00:00",
+      "id": "test_resttime_marker",
+      "implementability": "ready",
+      "missing_information": [],
+      "null_hypothesis": "High-distress chunks have no higher rest-time-intrusion-present fraction than lower-distress chunks.",
+      "prediction_id": "pred_resttime_marker",
+      "relevance": "direct",
+      "required_data": [
+        "record_id",
+        "text_review"
+      ],
+      "test_description": "For each held-out chunk, read text_review and assign distress level using a checklist covering the four thematic nodes (emotional distress, anxiety or stress, exhaustion or fatigue, self-doubt). A chunk is high-distress if it clearly expresses at least three of the four nodes and lower-distress if it expresses fewer than three. Rest-time-intrusion-present means the chunk contains at least one statement of mental academic activity during rest, leisure, family time, or downtime. Compare the rest-time-intrusion-present fraction in high-distress chunks with the lower-distress fraction."
+    },
+    {
+      "alternative_hypothesis": "The rest-time-intrusion condition shows a meaningfully higher fraction of depletion-present chunks than the study-time-only-worry condition.",
+      "created_at": "2026-09-06T13:00:40.315747+00:00",
+      "id": "test_burden_depletion",
+      "implementability": "ready",
+      "missing_information": [],
+      "null_hypothesis": "The fraction of depletion-present chunks is equal between the rest-time-intrusion and study-time-only-worry conditions.",
+      "prediction_id": "pred_burden_depletion",
+      "relevance": "direct",
+      "required_data": [
+        "record_id",
+        "text_review"
+      ],
+      "test_description": "For each held-out chunk, read text_review and code two mutually exclusive worry conditions. Rest-time-intrusion means mental academic activity during rest, leisure, family time, or downtime. Study-time-only-worry means worry while actively studying or planning with no rest-time intrusion. Exclude chunks matching neither condition. Depletion-present means the chunk contains at least one statement of being drained, numb, tired, unable to disconnect, or exhausted. Compare the fraction of depletion-present chunks between the rest-time-intrusion and study-time-only-worry conditions."
+    },
+    {
+      "alternative_hypothesis": "The meaning-loss condition shows a substantially higher fraction of automatic-engagement-present chunks than the workload-only condition.",
+      "created_at": "2026-09-06T13:00:40.323402+00:00",
+      "id": "test_meaning_collapse",
+      "implementability": "ready",
+      "missing_information": [],
+      "null_hypothesis": "The fraction of automatic-engagement-present chunks is equal between the meaning-loss and workload-only conditions.",
+      "prediction_id": "pred_meaning_collapse",
+      "relevance": "direct",
+      "required_data": [
+        "record_id",
+        "text_review"
+      ],
+      "test_description": "For each held-out chunk, read text_review and code two mutually exclusive conditions. Meaning-loss means the chunk contains at least one statement of loss of meaning (doesn't feel meaningful, used to like learning and now can't care, automatic engagement). Workload-only means workload-pressure statements (buried under assignments, pile never gets smaller) with no meaning-loss statement. Exclude chunks matching neither condition. Automatic-engagement-present means the chunk contains at least one statement of barely caring, going through it automatically, or low-effort automatic engagement. Compare the fraction of automatic-engagement-present chunks between the meaning-loss and workload-only conditions."
+    },
+    {
+      "alternative_hypothesis": "The combined condition shows a substantially higher fraction of tiredness-of-caring-present chunks than the alone condition.",
+      "created_at": "2026-09-06T13:00:40.330081+00:00",
+      "id": "test_anxiety_attenuated",
+      "implementability": "ready",
+      "missing_information": [],
+      "null_hypothesis": "The fraction of tiredness-of-caring-present chunks is equal between the combined and alone conditions.",
+      "prediction_id": "pred_anxiety_attenuated",
+      "relevance": "direct",
+      "required_data": [
+        "record_id",
+        "text_review"
+      ],
+      "test_description": "For each held-out chunk, read text_review and code three indicators. Fear-of-failure-present means at least one statement of being scared of failing or dreading outcomes. Meaning-loss-present means at least one statement of loss of meaning or doesn't feel meaningful. Tiredness-of-caring-present means at least one statement of tired of caring, barely caring, or automatic engagement. Form two conditions: combined means the chunk is both fear-of-failure-present and meaning-loss-present; alone means the chunk is fear-of-failure-present but not meaning-loss-present. Exclude chunks that are not fear-of-failure-present. Compare the fraction of tiredness-of-caring-present chunks between the combined and alone conditions."
+    }
+  ]
+}

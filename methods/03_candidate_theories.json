@@ -1,0 +1,329 @@
+{
+  "theories": [
+    {
+      "conflicting_evidence": [],
+      "created_at": "2026-09-06T12:58:49.476699+00:00",
+      "description": "General theory: anxiety about academic demands does not stay confined to study time but intrudes into rest and leisure, and this persistent mental occupation drains energy so that distress co-occurs with depletion. Anxiety and exhaustion are two faces of one process rather than independent problems.",
+      "id": "intrusion_depletion_theory",
+      "name": "Intrusive anxiety depletes capacity (general)",
+      "negative_experiments": [
+        "If intrusion and depletion statements never co-occur in the same held-out chunk, the theory is contradicted.",
+        "If chunks with no rest-time intrusion show equal or higher depletion, the depletion route is contradicted."
+      ],
+      "new_predictions_likely": [
+        "Held-out narratives containing intrusion statements (worry during rest) will mention depletion statements more often than narratives without intrusion.",
+        "Co-occurrence of anxiety and exhaustion terms will be higher in the same chunk than in independently sampled chunks."
+      ],
+      "new_predictions_unknown": [
+        "Whether intrusion precedes depletion or depletion produces the subjective sense of inability to disconnect cannot be decided cross-sectionally."
+      ],
+      "theory_statements": [
+        {
+          "evidence": [
+            {
+              "id": "evidence_record_0007",
+              "locator": "",
+              "role": "supporting",
+              "source": "",
+              "summary": "I tried to watch a show after dinner, but I kept thinking about the assignment I still haven’t finished. Even when I’m supposed to be relaxing, my mind is just running through deadlines and grades."
+            },
+            {
+              "id": "evidence_record_0011",
+              "locator": "",
+              "role": "supporting",
+              "source": "",
+              "summary": "I went out to eat with my family, but I was distracted the whole time worrying about my grades and the project due next week. Even my free time feels occupied by school."
+            },
+            {
+              "id": "evidence_record_0101",
+              "locator": "",
+              "role": "supporting",
+              "source": "",
+              "summary": "When I’m not studying, I’m still mentally studying, planning, or worrying. It’s like school has taken over all my downtime."
+            }
+          ],
+          "id": "intrusion_cooccurrence",
+          "law": "When academic worry persists, it co-occurs with feelings of being unable to mentally disconnect, and both together travel with reports of depletion.",
+          "scope": "Students reporting school-related stress in narrative form; expected to fail where academic demands are genuinely finished or externalized and no longer mentally active."
+        },
+        {
+          "evidence": [
+            {
+              "id": "evidence_record_0201",
+              "locator": "",
+              "role": "supporting",
+              "source": "",
+              "summary": "Schoolwork doesn’t feel meaningful anymore, so I procrastinate until it’s almost too late. I’m scared of failing, but I’m also tired of caring so much."
+            }
+          ],
+          "id": "worry_tiredness_link",
+          "law": "Students who report fear of failing alongside reduced meaning also report being tired of caring, so anxiety and depletion are expressed in the same accounts.",
+          "scope": "Applicable to middle-to-late-stage burnout where meaning has eroded; not expected at early burnout when anxiety is present but energy is intact."
+        }
+      ],
+      "unaccounted_evidence": [
+        {
+          "id": "evidence_record_0001",
+          "locator": "",
+          "role": "supporting",
+          "source": "",
+          "summary": "I feel buried under assignments from every class, and no matter how much I work, the pile never seems to get smaller. It makes me feel like I’m always behind before I even start."
+        },
+        {
+          "id": "evidence_record_0301",
+          "locator": "",
+          "role": "supporting",
+          "source": "",
+          "summary": "It’s weird because I used to like learning, and now I can barely care enough to open my notebook. Schoolwork has become something I go through automatically."
+        },
+        {
+          "id": "evidence_record_0401",
+          "locator": "",
+          "role": "supporting",
+          "source": "",
+          "summary": "I try to stay on top of everything, but I keep making mistakes and it’s embarrassing. I feel weaker and less capable than the other students."
+        }
+      ]
+    },
+    {
+      "conflicting_evidence": [],
+      "created_at": "2026-09-06T12:58:49.488336+00:00",
+      "description": "General theory: interpreting academic struggle as evidence of personal inadequacy sustains effortful self-monitoring, embarrassment, and comparison, which are energetically costly; over time this appraisal-driven monitoring contributes to depletion and eroded confidence as mutually reinforcing states.",
+      "id": "selfappraisal_drain_theory",
+      "name": "Self-appraisal drain (general)",
+      "negative_experiments": [
+        "If self-inadequacy framing never co-occurs with depletion statements in the held-out partition, the drain claim is contradicted.",
+        "If depletion statements appear equally often with external-cause and self-cause framings, the appraisal-specific route is weakened."
+      ],
+      "new_predictions_likely": [
+        "Held-out chunks containing self-inadequacy framing (weaker, less capable, embarrassment) will co-mention depletion more than chunks with external-cause framing."
+      ],
+      "new_predictions_unknown": [
+        "Whether the appraisal loop is a cause of depletion or a by-product of it cannot be settled with cross-sectional narrative data."
+      ],
+      "theory_statements": [
+        {
+          "evidence": [
+            {
+              "id": "evidence_record_0401",
+              "locator": "",
+              "role": "supporting",
+              "source": "",
+              "summary": "I try to stay on top of everything, but I keep making mistakes and it’s embarrassing. I feel weaker and less capable than the other students."
+            }
+          ],
+          "id": "inadequacy_monitoring",
+          "law": "Students who frame mistakes and difficulties as evidence of being less capable than peers report co-occurring embarrassment and weakened self-assessment, indicating an active appraisal-monitoring loop.",
+          "scope": "Students in peer-visible academic settings where comparison is possible; not expected where performance feedback is absent or de-identified."
+        },
+        {
+          "evidence": [
+            {
+              "id": "evidence_record_0201",
+              "locator": "",
+              "role": "supporting",
+              "source": "",
+              "summary": "Schoolwork doesn’t feel meaningful anymore, so I procrastinate until it’s almost too late. I’m scared of failing, but I’m also tired of caring so much."
+            },
+            {
+              "id": "evidence_record_0301",
+              "locator": "",
+              "role": "supporting",
+              "source": "",
+              "summary": "It’s weird because I used to like learning, and now I can barely care enough to open my notebook. Schoolwork has become something I go through automatically."
+            }
+          ],
+          "id": "monitoring_drains",
+          "law": "Sustained self-monitoring and meaning erosion co-occur with exhaustion and automatic low-effort engagement, so appraisal-driven effort contributes to depletion.",
+          "scope": "Late-stage burnout where meaning has eroded; early burnout may show monitoring without full depletion."
+        }
+      ],
+      "unaccounted_evidence": [
+        {
+          "id": "evidence_record_0007",
+          "locator": "",
+          "role": "supporting",
+          "source": "",
+          "summary": "I tried to watch a show after dinner, but I kept thinking about the assignment I still haven’t finished. Even when I’m supposed to be relaxing, my mind is just running through deadlines and grades."
+        },
+        {
+          "id": "evidence_record_0011",
+          "locator": "",
+          "role": "supporting",
+          "source": "",
+          "summary": "I went out to eat with my family, but I was distracted the whole time worrying about my grades and the project due next week. Even my free time feels occupied by school."
+        }
+      ]
+    },
+    {
+      "conflicting_evidence": [],
+      "created_at": "2026-09-06T12:58:49.502133+00:00",
+      "description": "Specific theory: the key signature of academic anxiety in school burnout is not worry during study but worry during non-study time; this rest-time intrusion is the channel through which anxiety becomes experienced as burden rather than as effort, and it predicts co-occurring depletion in the same narrative chunk.",
+      "id": "resttime_intrusion_theory",
+      "name": "Rest-time intrusion as the primary distress channel (specific)",
+      "negative_experiments": [
+        "If high-distress chunks rarely mention rest-time intrusion, this theory is contradicted.",
+        "If study-time worry alone predicts depletion as well as rest-time intrusion, the specific channel claim is contradicted."
+      ],
+      "new_predictions_likely": [
+        "In the held-out partition, rest-time intrusion statements will appear in a majority of high-distress chunks.",
+        "Rest-time intrusion will be a better marker of co-occurring depletion than study-time worry."
+      ],
+      "new_predictions_unknown": [
+        "Whether rest-time intrusion is a symptom or a cause of the broader burnout syndrome remains undetermined."
+      ],
+      "theory_statements": [
+        {
+          "evidence": [
+            {
+              "id": "evidence_record_0007",
+              "locator": "",
+              "role": "supporting",
+              "source": "",
+              "summary": "I tried to watch a show after dinner, but I kept thinking about the assignment I still haven’t finished. Even when I’m supposed to be relaxing, my mind is just running through deadlines and grades."
+            },
+            {
+              "id": "evidence_record_0011",
+              "locator": "",
+              "role": "supporting",
+              "source": "",
+              "summary": "I went out to eat with my family, but I was distracted the whole time worrying about my grades and the project due next week. Even my free time feels occupied by school."
+            },
+            {
+              "id": "evidence_record_0101",
+              "locator": "",
+              "role": "supporting",
+              "source": "",
+              "summary": "When I’m not studying, I’m still mentally studying, planning, or worrying. It’s like school has taken over all my downtime."
+            }
+          ],
+          "id": "resttime_marker",
+          "law": "Anxiety described as intruding into designated rest or leisure time marks the transition from productive worry to burden, and is the dominant anxiety form in burnout narratives.",
+          "scope": "Students in sustained academic pressure; not expected among students with clearly separated study and leisure routines."
+        },
+        {
+          "evidence": [
+            {
+              "id": "evidence_record_0201",
+              "locator": "",
+              "role": "supporting",
+              "source": "",
+              "summary": "Schoolwork doesn’t feel meaningful anymore, so I procrastinate until it’s almost too late. I’m scared of failing, but I’m also tired of caring so much."
+            },
+            {
+              "id": "evidence_record_0301",
+              "locator": "",
+              "role": "supporting",
+              "source": "",
+              "summary": "It’s weird because I used to like learning, and now I can barely care enough to open my notebook. Schoolwork has become something I go through automatically."
+            }
+          ],
+          "id": "burden_depletion",
+          "law": "Chunks that name rest as invaded also name depletion, because the inability to recover is what students report as exhaustion.",
+          "scope": "Cross-sectional narratives; does not apply to acute single-deadline stress where rest is preserved."
+        }
+      ],
+      "unaccounted_evidence": [
+        {
+          "id": "evidence_record_0001",
+          "locator": "",
+          "role": "supporting",
+          "source": "",
+          "summary": "I feel buried under assignments from every class, and no matter how much I work, the pile never seems to get smaller. It makes me feel like I’m always behind before I even start."
+        },
+        {
+          "id": "evidence_record_0401",
+          "locator": "",
+          "role": "supporting",
+          "source": "",
+          "summary": "I try to stay on top of everything, but I keep making mistakes and it’s embarrassing. I feel weaker and less capable than the other students."
+        }
+      ]
+    },
+    {
+      "conflicting_evidence": [
+        {
+          "id": "evidence_record_0401",
+          "locator": "",
+          "role": "supporting",
+          "source": "",
+          "summary": "I try to stay on top of everything, but I keep making mistakes and it’s embarrassing. I feel weaker and less capable than the other students."
+        }
+      ],
+      "created_at": "2026-09-06T12:58:49.514451+00:00",
+      "description": "Specific theory: in school burnout, the collapse of meaning for schoolwork is the pivotal event; once schoolwork no longer feels meaningful, students shift into automatic, low-investment engagement, which reads as exhaustion and co-occurs with reduced anxiety about outcomes because caring itself has dropped.",
+      "id": "meaning_collapse_theory",
+      "name": "Meaning collapse precedes automatic engagement (specific)",
+      "negative_experiments": [
+        "If meaning-loss statements are rare in high-distress chunks, this theory is contradicted.",
+        "If meaning loss is not differentially associated with automatic engagement versus workload pressure, the pivotal-event claim is weakened."
+      ],
+      "new_predictions_likely": [
+        "Held-out chunks reporting loss of meaning will co-mention automatic or barely-caring engagement more than chunks reporting only workload pressure."
+      ],
+      "new_predictions_unknown": [
+        "Whether meaning collapse is reversible and whether reversed meaning predicts recovery of engagement is not testable on this corpus."
+      ],
+      "theory_statements": [
+        {
+          "evidence": [
+            {
+              "id": "evidence_record_0301",
+              "locator": "",
+              "role": "supporting",
+              "source": "",
+              "summary": "It’s weird because I used to like learning, and now I can barely care enough to open my notebook. Schoolwork has become something I go through automatically."
+            }
+          ],
+          "id": "meaning_collapse_first",
+          "law": "Loss of meaning for schoolwork appears before or alongside automatic low-effort engagement and is reported together with reduced investment.",
+          "scope": "Late-stage burnout; not expected in early burnout where meaning is intact and effort is still high."
+        },
+        {
+          "evidence": [
+            {
+              "id": "evidence_record_0201",
+              "locator": "",
+              "role": "supporting",
+              "source": "",
+              "summary": "Schoolwork doesn’t feel meaningful anymore, so I procrastinate until it’s almost too late. I’m scared of failing, but I’m also tired of caring so much."
+            }
+          ],
+          "id": "anxiety_attenuated",
+          "law": "As meaning collapses, fear of failure remains but is paired with tiredness of caring, so the distress profile shifts from pure anxiety to mixed anxiety-plus-depletion.",
+          "scope": "Applies to students who previously cared about outcomes; not expected where anxiety is absent from the start."
+        }
+      ],
+      "unaccounted_evidence": [
+        {
+          "id": "evidence_record_0001",
+          "locator": "",
+          "role": "supporting",
+          "source": "",
+          "summary": "I feel buried under assignments from every class, and no matter how much I work, the pile never seems to get smaller. It makes me feel like I’m always behind before I even start."
+        },
+        {
+          "id": "evidence_record_0007",
+          "locator": "",
+          "role": "supporting",
+          "source": "",
+          "summary": "I tried to watch a show after dinner, but I kept thinking about the assignment I still haven’t finished. Even when I’m supposed to be relaxing, my mind is just running through deadlines and grades."
+        },
+        {
+          "id": "evidence_record_0011",
+          "locator": "",
+          "role": "supporting",
+          "source": "",
+          "summary": "I went out to eat with my family, but I was distracted the whole time worrying about my grades and the project due next week. Even my free time feels occupied by school."
+        },
+        {
+          "id": "evidence_record_0101",
+          "locator": "",
+          "role": "supporting",
+          "source": "",
+          "summary": "When I’m not studying, I’m still mentally studying, planning, or worrying. It’s like school has taken over all my downtime."
+        }
+      ]
+    }
+  ]
+}
