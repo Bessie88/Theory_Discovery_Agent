@@ -40,17 +40,6 @@ theory.
 - `workflow/` — the complete canonical theory-discovery implementation, all
   discovery / measurement / compiler prompts, and the workflow test suite.
 
-## Deliberately excluded
-
-The package excludes held-out narrative text, per-record labels, source-model
-weights, agent sessions, caches, Slurm logs, abandoned job packets, and legacy
-lexical pilot outputs. Those files are unnecessary for a report repository and
-could expose text data or obscure the final v13 protocol.
-
-The audit metadata records the input and output hashes for each of the 16
-measurement artifacts. Full reruns require access to the protected held-out
-partition and local Qwen3.6 environment.
-
 ## GitHub upload
 
 From this repository root, commit only this directory unless you separately
