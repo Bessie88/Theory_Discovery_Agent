@@ -63,12 +63,9 @@ Each test is implementable using the supplied held-out fields only (`record_id`,
   the same validation-input hash, and exactly 493 unique record IDs.
 - All 7,888 labels parsed as valid `PRESENT` or `ABSENT`; none was silently
   converted from a malformed response, and there were no `UNCERTAIN` labels.
-- Recomputing all eight execution receipts from the hash-checked labels exactly
-  reproduces their stored statuses, summaries, and group counts.
 
 ## Review files
 - `stage-results/05a_frozen_measurement_specifications.json` — 16 frozen atomic questions.
 - `stage-results/05_falsification_specifications.json` — frozen groups and outcomes.
 - `stage-results/06_frozen_measurement_runs.json` — hashes for all 16 runs.
 - `stage-results/07_validation_records.json` — only the eight current held-out results.
-- `validation-execution/<prediction-id>.py` — deterministic receipt and group counts.
