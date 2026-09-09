@@ -10,6 +10,5 @@ Conduct a human review before collecting data or testing hypotheses:
   `missing_information`.
 - Keep a workflow marked `ready` separate from empirical validation.
 
-If data have already been collected, record a separate validation result as
-`support`, `contradict`, or `no_evidence`. Do not infer p-values, e-values, or
-theory probabilities from this preflight review.
+Do not infer p-values, e-values, or theory probabilities from this preflight
+review.

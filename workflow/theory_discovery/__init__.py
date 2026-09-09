@@ -56,7 +56,6 @@ async def run(
             graph_source=_optional_string(payload, "graph_source"),
             discovery_documents=_object_list(payload, "discovery_documents"),
             validation_data=_optional_object(payload, "validation_data"),
-            available_data=_optional_object(payload, "available_data"),
         )
         result = project.status()
     else:

@@ -65,8 +65,6 @@ Each test is implementable using the supplied held-out fields only (`record_id`,
   converted from a malformed response, and there were no `UNCERTAIN` labels.
 - Recomputing all eight execution receipts from the hash-checked labels exactly
   reproduces their stored statuses, summaries, and group counts.
-- The 6 pre-v10 lexical pilot results remain only as legacy audit data in
-  `project/state.json`; they do not count toward this result.
 
 ## Review files
 - `stage-results/05a_frozen_measurement_specifications.json` — 16 frozen atomic questions.
