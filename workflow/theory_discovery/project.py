@@ -220,335 +220,6 @@ def _load_prompt(file_name: str) -> str:
     return (PROMPTS_DIR / file_name).read_text(encoding="utf-8").strip()
 
 
-def _migrate_v4_state(raw: dict[str, object]) -> dict[str, object]:
-    """Convert the former single-law schema without discarding saved content."""
-    migrated = deepcopy(raw)
-    legacy_theories = _mapping_object_list(migrated, "theories", allow_empty=True)
-    law_ids_by_theory: dict[str, str] = {}
-    evidence_records_by_id: dict[str, dict[str, object]] = {}
-    converted_theories: list[dict[str, object]] = []
-
-    for legacy in legacy_theories:
-        theory_id = _mapping_text(legacy, "id")
-        law_id = f"{theory_id}_law_1"
-        law_ids_by_theory[theory_id] = law_id
-        evidence = _mapping_object_list(legacy, "evidence", allow_empty=True)
-        for record in evidence:
-            record_id = _mapping_optional_text(record, "id") or _new_id("evidence")
-            evidence_records_by_id.setdefault(record_id, {**record, "id": record_id})
-        supporting_evidence = [
-            item for item in evidence if _mapping_optional_text(item, "role") != "conflicting"
-        ]
-        converted_theories.append(
-            {
-                "id": theory_id,
-                "name": _mapping_text(legacy, "name"),
-                "description": (
-                    "Migrated from the prior single-law format. "
-                    f"Previous proposed mechanism: {_mapping_text(legacy, 'mechanism')}"
-                ),
-                "theory_statements": [
-                    {
-                        "id": law_id,
-                        "law": _mapping_text(legacy, "law"),
-                        "scope": _mapping_text(legacy, "scope"),
-                        "evidence": supporting_evidence or evidence,
-                    }
-                ],
-                "conflicting_evidence": [
-                    item
-                    for item in evidence
-                    if _mapping_optional_text(item, "role") == "conflicting"
-                ],
-                "unaccounted_evidence": [
-                    item
-                    for item in evidence
-                    if _mapping_optional_text(item, "role") == "unclear"
-                ],
-                "new_predictions_likely": [],
-                "new_predictions_unknown": [],
-                "negative_experiments": [],
-                "created_at": _mapping_optional_text(legacy, "created_at"),
-            }
-        )
-
-    converted_predictions: list[dict[str, object]] = []
-    for legacy in _mapping_object_list(migrated, "predictions", allow_empty=True):
-        theory_id = _mapping_text(legacy, "theory_id")
-        law_id = law_ids_by_theory.get(theory_id)
-        if law_id is None:
-            raise ValueError(f"legacy prediction references unknown theory ID: {theory_id}")
-        condition = _mapping_text(legacy, "condition_or_exposure")
-        outcome = _mapping_text(legacy, "expected_outcome")
-        comparison = _mapping_text(legacy, "comparison")
-        pattern = _mapping_text(legacy, "expected_pattern")
-        rationale = _mapping_text(legacy, "rationale")
-        converted_predictions.append(
-            {
-                "id": _mapping_text(legacy, "id"),
-                "theory_id": theory_id,
-                "law_id": law_id,
-                "specific_prediction": _mapping_text(legacy, "statement"),
-                "operational_signals": [condition, outcome],
-                "strong_test_requirement": (
-                    f"Compare {condition} with {comparison}; assess whether {pattern}."
-                ),
-                "support_criteria": f"The comparison shows {pattern}. {rationale}",
-                "contradiction_criteria": (
-                    f"The comparison does not show {pattern}."
-                ),
-                "created_at": _mapping_optional_text(legacy, "created_at"),
-            }
-        )
-
-    migrated["schema_version"] = 5
-    migrated["evidence_records"] = list(evidence_records_by_id.values())
-    migrated["theories"] = converted_theories
-    migrated["predictions"] = converted_predictions
-    return migrated
-
-
-def _migrate_v5_state(raw: dict[str, object]) -> dict[str, object]:
-    """Add supplied-data and falsification-test state to the v5 schema."""
-    migrated = deepcopy(raw)
-    legacy_plans = _mapping_object_list(migrated, "measurement_plans", allow_empty=True)
-    migrated["available_data"] = (
-        _mapping_object(legacy_plans[0], "data_design") if legacy_plans else None
-    )
-    migrated["falsification_tests"] = []
-    migrated["schema_version"] = 6
-    return migrated
-
-
-def _migrate_v6_state(raw: dict[str, object]) -> dict[str, object]:
-    """Separate discovery material from data reserved for falsification."""
-    migrated = deepcopy(raw)
-    migrated.setdefault("discovery_documents", [])
-    legacy_data = migrated.pop("available_data", None)
-    if isinstance(legacy_data, dict):
-        legacy_data.setdefault("partition_role", "unknown")
-        legacy_data.setdefault(
-            "separation_note",
-            "Legacy project: separation from discovery material was not declared.",
-        )
-    migrated["validation_data"] = legacy_data
-    migrated["schema_version"] = 7
-    return migrated
-
-
-def _migrate_v7_state(raw: dict[str, object]) -> dict[str, object]:
-    """Add an opt-in, artifact-backed held-out execution stage."""
-    migrated = deepcopy(raw)
-    validation_data = migrated.get("validation_data")
-    if isinstance(validation_data, dict):
-        validation_data.setdefault("auto_execute", False)
-    for result in _mapping_object_list(migrated, "validation_results", allow_empty=True):
-        result.setdefault("execution_artifact", "")
-    migrated["schema_version"] = 8
-    return migrated
-
-
-def _migrate_v8_state(raw: dict[str, object]) -> dict[str, object]:
-    """Preserve legacy tests/results while starting the frozen compiler stage.
-
-    Existing v8 executions were based on prose tests and are intentionally
-    retained as historical pilot output.  They must not satisfy the v9
-    compiler-backed execution requirement.
-    """
-    migrated = deepcopy(raw)
-    validation_data = migrated.get("validation_data")
-    if isinstance(validation_data, dict):
-        validation_data.setdefault("measurement_rules", [])
-    migrated.setdefault("falsification_specifications", [])
-    for result in _mapping_object_list(migrated, "validation_results", allow_empty=True):
-        result.setdefault("falsification_specification_id", "")
-        result.setdefault("specification_hash", "")
-        result.setdefault("result_semantics", "legacy_v1")
-    migrated["schema_version"] = 9
-    return migrated
-
-
-def _migrate_v9_state(raw: dict[str, object]) -> dict[str, object]:
-    """Start the frozen-question protocol without deleting prior pilot work.
-
-    Version 9 bound templates to lexical rules.  Those contracts and their
-    results are historical observations, not a valid run of the new protocol:
-    no question/model/uncertainty handling was frozen before held-out access.
-    """
-    migrated = deepcopy(raw)
-    prior = _mapping_object_list(migrated, "falsification_specifications", allow_empty=True)
-    existing_legacy = _mapping_object_list(
-        migrated, "legacy_falsification_specifications", allow_empty=True
-    )
-    for specification in [*existing_legacy, *prior]:
-        specification.setdefault("measurement_protocol", "legacy_lexical_v1")
-    migrated["legacy_falsification_specifications"] = [*existing_legacy, *prior]
-    migrated["falsification_specifications"] = []
-    migrated["measurement_specifications"] = []
-    migrated["measurement_runs"] = []
-    for result in _mapping_object_list(migrated, "validation_results", allow_empty=True):
-        result.setdefault("result_semantics", "legacy_v9_lexical_pilot")
-    migrated["schema_version"] = 10
-    return migrated
-
-
-def _migrate_v10_state(raw: dict[str, object]) -> dict[str, object]:
-    """Move unrun Qwen3.8 measurement contracts aside before model isolation.
-
-    The new protocol freezes Qwen3.6 as the blind held-out measurement model.
-    A question generated under the discovery-side model may be reused only by
-    generating a new contract before validation; a saved Qwen3.8 contract must
-    never be relabelled as Qwen3.6 after it has measured held-out text.
-    """
-    migrated = deepcopy(raw)
-    current = _mapping_object_list(
-        migrated, "measurement_specifications", allow_empty=True
-    )
-    runs = _mapping_object_list(migrated, "measurement_runs", allow_empty=True)
-    current_falsification = _mapping_object_list(
-        migrated, "falsification_specifications", allow_empty=True
-    )
-    old_model_contracts = [
-        item for item in current if item.get("model_id") == "qwen3.8-27b"
-    ]
-    if old_model_contracts and not runs and not current_falsification:
-        archived = _mapping_object_list(
-            migrated, "superseded_measurement_specifications", allow_empty=True
-        )
-        migrated["superseded_measurement_specifications"] = [
-            *archived,
-            *current,
-        ]
-        migrated["measurement_specifications"] = []
-        old_ids = {str(item.get("id", "")) for item in current}
-        migrated["readiness_assessments"] = [
-            item
-            for item in _mapping_object_list(
-                migrated, "readiness_assessments", allow_empty=True
-            )
-            if not (
-                item.get("parent_type") == "measurement"
-                and item.get("parent_id") in old_ids
-            )
-        ]
-    migrated.setdefault("superseded_measurement_specifications", [])
-    migrated["schema_version"] = 11
-    return migrated
-
-
-def _migrate_v11_state(raw: dict[str, object]) -> dict[str, object]:
-    """Require a fresh v12 compilation before any unmeasured contract runs.
-
-    Schema v11 could only express a single condition against its complement.
-    Its contracts therefore cannot faithfully represent predictions requiring
-    explicit comparison groups, conjunctions, or thresholded composites.  If
-    no held-out labels exist, archive those unrun contracts and regenerate the
-    atomic questions plus v12 execution contracts.  Never rewrite a contract
-    that has already measured held-out records.
-    """
-    migrated = deepcopy(raw)
-    current_measurements = _mapping_object_list(
-        migrated, "measurement_specifications", allow_empty=True
-    )
-    current_contracts = _mapping_object_list(
-        migrated, "falsification_specifications", allow_empty=True
-    )
-    runs = _mapping_object_list(migrated, "measurement_runs", allow_empty=True)
-    if not runs and (current_measurements or current_contracts):
-        archived_measurements = _mapping_object_list(
-            migrated, "superseded_measurement_specifications", allow_empty=True
-        )
-        migrated["superseded_measurement_specifications"] = [
-            *archived_measurements,
-            *current_measurements,
-        ]
-        archived_contracts = _mapping_object_list(
-            migrated, "legacy_falsification_specifications", allow_empty=True
-        )
-        for contract in current_contracts:
-            contract.setdefault(
-                "measurement_protocol", "frozen_llm_question_v1_schema_v11_superseded"
-            )
-        migrated["legacy_falsification_specifications"] = [
-            *archived_contracts,
-            *current_contracts,
-        ]
-        measurement_ids = {str(item.get("id", "")) for item in current_measurements}
-        contract_ids = {str(item.get("id", "")) for item in current_contracts}
-        migrated["readiness_assessments"] = [
-            item
-            for item in _mapping_object_list(
-                migrated, "readiness_assessments", allow_empty=True
-            )
-            if not (
-                (item.get("parent_type") == "measurement" and item.get("parent_id") in measurement_ids)
-                or (
-                    item.get("parent_type") == "falsification_specification"
-                    and item.get("parent_id") in contract_ids
-                )
-            )
-        ]
-        migrated["measurement_specifications"] = []
-        migrated["falsification_specifications"] = []
-    migrated["schema_version"] = 12
-    return migrated
-
-
-def _migrate_v12_state(raw: dict[str, object]) -> dict[str, object]:
-    """Upgrade unrun contracts to the structured missing-construct protocol.
-
-    v12 recorded free-text ``unresolved`` notes.  v13 needs a structured,
-    pre-validation diagnosis before it can request an additional atomic
-    question.  When held-out labels do not exist, archive the old contracts
-    and recompile them under the new protocol.  A project that has already
-    measured held-out records is never rewritten.
-    """
-    migrated = deepcopy(raw)
-    current_contracts = _mapping_object_list(
-        migrated, "falsification_specifications", allow_empty=True
-    )
-    runs = _mapping_object_list(migrated, "measurement_runs", allow_empty=True)
-    migrated.setdefault("superseded_falsification_specifications", [])
-    migrated.setdefault("measurement_repair_rounds", 0)
-    migrated.setdefault("falsification_repair_prediction_ids", [])
-    if not runs and current_contracts:
-        blocked_contracts = [
-            contract
-            for contract in current_contracts
-            if contract.get("readiness") != "ready"
-        ]
-        for contract in current_contracts:
-            contract.setdefault("missing_measurement_constructs", [])
-        if not blocked_contracts:
-            migrated["schema_version"] = SCHEMA_VERSION
-            return migrated
-        archived = _mapping_object_list(
-            migrated, "superseded_falsification_specifications", allow_empty=True
-        )
-        migrated["superseded_falsification_specifications"] = [
-            *archived,
-            *blocked_contracts,
-        ]
-        contract_ids = {str(item.get("id", "")) for item in blocked_contracts}
-        migrated["readiness_assessments"] = [
-            item
-            for item in _mapping_object_list(
-                migrated, "readiness_assessments", allow_empty=True
-            )
-            if not (
-                item.get("parent_type") == "falsification_specification"
-                and item.get("parent_id") in contract_ids
-            )
-        ]
-        migrated["falsification_specifications"] = [
-            contract
-            for contract in current_contracts
-            if contract.get("readiness") == "ready"
-        ]
-    migrated["schema_version"] = SCHEMA_VERSION
-    return migrated
-
-
 class TheoryDiscoveryProject:
     """A small single-writer store with optional, separate validation records."""
 
@@ -566,7 +237,6 @@ class TheoryDiscoveryProject:
         graph_source: str | None = None,
         discovery_documents: list[dict[str, object]] | None = None,
         validation_data: dict[str, object] | None = None,
-        available_data: dict[str, object] | None = None,
     ) -> TheoryDiscoveryProject:
         _require_text("study_id", study_id)
         _require_text("question", question)
@@ -588,14 +258,9 @@ class TheoryDiscoveryProject:
             raise ValueError("discovery_documents must have unique IDs")
         for document_id in document_ids:
             _require_identifier("discovery document ID", document_id)
-        if validation_data is not None and available_data is not None:
-            raise ValueError("provide validation_data instead of available_data, not both")
-        raw_validation_data = (
-            validation_data if validation_data is not None else available_data
-        )
         parsed_validation_data = (
-            _parse_data_design(raw_validation_data, "validation_data")
-            if raw_validation_data is not None
+            _parse_data_design(validation_data, "validation_data")
+            if validation_data is not None
             else None
         )
         if parsed_validation_data is not None:
@@ -630,32 +295,7 @@ class TheoryDiscoveryProject:
         raw = json.loads(state_path.read_text(encoding="utf-8"))
         if not isinstance(raw, dict):
             raise ValueError("state.json must contain an object")
-        while raw.get("schema_version") != SCHEMA_VERSION:
-            if raw.get("schema_version") == 4:
-                raw = _migrate_v4_state(raw)
-            elif raw.get("schema_version") == 5:
-                raw = _migrate_v5_state(raw)
-            elif raw.get("schema_version") == 6:
-                raw = _migrate_v6_state(raw)
-            elif raw.get("schema_version") == 7:
-                raw = _migrate_v7_state(raw)
-            elif raw.get("schema_version") == 8:
-                raw = _migrate_v8_state(raw)
-            elif raw.get("schema_version") == 9:
-                raw = _migrate_v9_state(raw)
-            elif raw.get("schema_version") == 10:
-                raw = _migrate_v10_state(raw)
-            elif raw.get("schema_version") == 11:
-                raw = _migrate_v11_state(raw)
-            elif raw.get("schema_version") == 12:
-                raw = _migrate_v12_state(raw)
-            else:
-                break
         state = ProjectState.from_dict(raw)
-        if state.schema_version != SCHEMA_VERSION:
-            raise ValueError(
-                f"unsupported schema version {state.schema_version}; expected {SCHEMA_VERSION}"
-            )
         return cls(project_root, state)
 
     def configure_validation_execution(self, auto_execute: bool) -> DataDesign:
@@ -1765,9 +1405,6 @@ class TheoryDiscoveryProject:
     ) -> ValidationResult:
         _find_by_id(self.state.predictions, prediction_id, "prediction")
         allowed_statuses = {
-            "support",
-            "contradict",
-            "no_evidence",
             "prediction_consistent",
             "observed_directional_contradiction",
             "inconclusive",
@@ -1776,40 +1413,24 @@ class TheoryDiscoveryProject:
         if status not in allowed_statuses:
             raise ValueError("invalid validation status")
         _require_text("summary", summary)
-        result_semantics = "legacy_v1"
-        if falsification_specification_id:
-            specification = cast(
-                FalsificationSpecification,
-                _find_by_id(
-                    self.state.falsification_specifications,
-                    falsification_specification_id,
-                    "falsification specification",
-                ),
+        if not falsification_specification_id:
+            raise ValueError("validation requires a frozen falsification specification ID")
+        specification = cast(
+            FalsificationSpecification,
+            _find_by_id(
+                self.state.falsification_specifications,
+                falsification_specification_id,
+                "falsification specification",
+            ),
+        )
+        if specification.prediction_id != prediction_id:
+            raise ValueError(
+                "validation specification does not belong to its prediction"
             )
-            if specification.prediction_id != prediction_id:
-                raise ValueError(
-                    "validation specification does not belong to its prediction"
-                )
-            if specification.readiness != "ready":
-                raise ValueError("cannot execute a falsification specification that is not ready")
-            if specification_hash != specification.specification_hash:
-                raise ValueError("validation result does not match the frozen specification hash")
-            if status in {"support", "contradict", "no_evidence"}:
-                raise ValueError(
-                    "compiler-backed validation must use the v1 result semantics"
-                )
-            result_semantics = "falsification_compiler_v1"
-        else:
-            if specification_hash:
-                raise ValueError("a specification hash requires a specification ID")
-            if status not in {"support", "contradict", "no_evidence"}:
-                raise ValueError(
-                    "new validation semantics require a frozen specification ID and hash"
-                )
-            if prediction_id not in {
-                item.prediction_id for item in self.state.falsification_tests
-            }:
-                raise ValueError("a prediction needs a falsification test before legacy validation")
+        if specification.readiness != "ready":
+            raise ValueError("cannot execute a falsification specification that is not ready")
+        if specification_hash != specification.specification_hash:
+            raise ValueError("validation result does not match the frozen specification hash")
         if any(
             item.prediction_id == prediction_id
             and item.falsification_specification_id == falsification_specification_id
@@ -1827,7 +1448,7 @@ class TheoryDiscoveryProject:
             execution_artifact=execution_artifact,
             falsification_specification_id=falsification_specification_id,
             specification_hash=specification_hash,
-            result_semantics=result_semantics,
+            result_semantics="falsification_compiler_v1",
         )
         self._require_unique_id(result.id)
         self.state.validation_results.append(result)
@@ -2541,9 +2162,6 @@ class TheoryDiscoveryProject:
                 "falsification_specifications": len(
                     self.state.falsification_specifications
                 ),
-                "legacy_falsification_specifications": len(
-                    self.state.legacy_falsification_specifications
-                ),
                 "measurement_specifications": len(
                     self.state.measurement_specifications
                 ),
@@ -2867,7 +2485,6 @@ class TheoryDiscoveryProject:
             *(item.id for item in self.state.predictions),
             *(item.id for item in self.state.falsification_tests),
             *(item.id for item in self.state.falsification_specifications),
-            *(item.id for item in self.state.legacy_falsification_specifications),
             *(item.id for item in self.state.measurement_specifications),
             *(item.id for item in self.state.measurement_runs),
             *(item.id for item in self.state.measurement_plans),
@@ -3108,7 +2725,7 @@ def _mapping_object(item: dict[str, object], key: str) -> dict[str, object]:
 def _mapping_expression_dict(
     item: dict[str, object], key: str
 ) -> dict[str, dict[str, object]]:
-    """Read the optional v12 Boolean-expression mapping from a payload."""
+    """Read an optional Boolean-expression mapping from a payload."""
     value = item.get(key, {})
     if not isinstance(value, dict) or not all(
         isinstance(name, str) and isinstance(expression, dict)

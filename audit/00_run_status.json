@@ -1,21 +1,18 @@
 {
   "canonical_state": "/scratch/yucai/prime_theory/prime-theory-agent/research/school-burnout-psychological-distress-heldout-qwen38/project/state.json",
   "counts": {
-    "active_readiness_assessments": 24,
-    "active_validation_results": 8,
-    "archived_legacy_readiness_assessments": 8,
-    "archived_legacy_validation_results": 6,
     "candidate_relationships": 6,
     "discovery_documents": 7,
     "falsification_specifications": 8,
     "falsification_tests": 8,
     "graph_edges": 3,
     "graph_nodes": 4,
-    "legacy_falsification_specifications": 16,
     "measurement_runs": 16,
     "measurement_specifications": 16,
     "predictions": 8,
-    "theories": 4
+    "readiness_assessments": 24,
+    "theories": 4,
+    "validation_results": 8
   },
   "event_log": "/scratch/yucai/prime_theory/prime-theory-agent/research/school-burnout-psychological-distress-heldout-qwen38/project/events.jsonl",
   "revision": 148,

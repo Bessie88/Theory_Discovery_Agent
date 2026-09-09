@@ -5,7 +5,7 @@ The schema mirrors the research objects:
     Theory = Description + scoped law statements + evidence accounting
     Prediction = Falsifiable implication of one theory law
     Falsification test = Null + alternative + supplied data requirements
-    Validation = Support / Contradict / No evidence
+    Validation = Frozen execution result
     Workflow = Draft / Ready / Needs revision / Blocked
 """
 
@@ -23,12 +23,7 @@ ReadinessStatus = Literal["missing", "draft", "ready", "needs_revision", "blocke
 ReadinessParentType = Literal[
     "theory", "prediction", "measurement", "falsification_specification"
 ]
-# The first three values are retained only so projects created before schema v9
-# can still be opened.  New compiler-backed executions use the latter four.
 ValidationStatus = Literal[
-    "support",
-    "contradict",
-    "no_evidence",
     "prediction_consistent",
     "observed_directional_contradiction",
     "inconclusive",
@@ -241,16 +236,14 @@ class FalsificationSpecification:
     comparison: dict[str, str]
     hypotheses: dict[str, str]
     decision_rule: dict[str, str]
-    # v12 templates can give measurements stable aliases and derive group or
-    # outcome membership from a tiny frozen Boolean language.  The expression
+    # Templates can give measurements stable aliases and derive group or
+    # outcome membership from a small frozen Boolean language. The expression
     # tree is interpreted only by the deterministic executor, never by the
     # held-out measurement model.
     expressions: dict[str, dict[str, object]] = field(default_factory=dict)
     measurement_rule_snapshot: dict[str, MeasurementRule] = field(
         default_factory=dict
     )
-    # ``legacy_lexical_v1`` is preserved only for historical v9 projects.
-    # New specifications bind to frozen LLM measurement questions instead.
     measurement_protocol: str = "frozen_llm_question_v1"
     measurement_specification_snapshot: dict[str, MeasurementSpecification] = field(
         default_factory=dict
@@ -325,7 +318,7 @@ class ValidationResult:
     execution_artifact: str = ""
     falsification_specification_id: str = ""
     specification_hash: str = ""
-    result_semantics: str = "legacy_v1"
+    result_semantics: str = "falsification_compiler_v1"
     created_at: str = field(default_factory=utc_now)
 
 
@@ -346,22 +339,12 @@ class ProjectState:
     falsification_specifications: list[FalsificationSpecification] = field(
         default_factory=list
     )
-    # Earlier compiler output is retained for auditability but never advances
-    # the current frozen-question validation workflow.
-    legacy_falsification_specifications: list[FalsificationSpecification] = field(
-        default_factory=list
-    )
     # Unused contracts replaced during an automatic missing-construct repair.
     # They remain inspectable but never advance the active workflow.
     superseded_falsification_specifications: list[FalsificationSpecification] = field(
         default_factory=list
     )
     measurement_specifications: list[MeasurementSpecification] = field(
-        default_factory=list
-    )
-    # A measurement contract can only be superseded before it has been used on
-    # held-out data.  Retain it for audit rather than silently overwriting it.
-    superseded_measurement_specifications: list[MeasurementSpecification] = field(
         default_factory=list
     )
     # The repair loop is intentionally bounded.  A repeated diagnosis after
@@ -437,8 +420,6 @@ class ProjectState:
 
         raw_validation_data = value.get("validation_data")
         if raw_validation_data is None:
-            raw_validation_data = value.get("available_data")
-        if raw_validation_data is None:
             validation_data = None
         elif isinstance(raw_validation_data, dict):
             validation_data = _parse_data_design_dict(raw_validation_data)
@@ -479,12 +460,6 @@ class ProjectState:
                 _parse_falsification_specification_dict(item)
                 for item in _expect_dict_list(value, "falsification_specifications")
             ],
-            legacy_falsification_specifications=[
-                _parse_falsification_specification_dict(item)
-                for item in _expect_dict_list(
-                    value, "legacy_falsification_specifications"
-                )
-            ],
             superseded_falsification_specifications=[
                 _parse_falsification_specification_dict(item)
                 for item in _expect_dict_list(
@@ -494,12 +469,6 @@ class ProjectState:
             measurement_specifications=[
                 MeasurementSpecification(**item)
                 for item in _expect_dict_list(value, "measurement_specifications")
-            ],
-            superseded_measurement_specifications=[
-                MeasurementSpecification(**item)
-                for item in _expect_dict_list(
-                    value, "superseded_measurement_specifications"
-                )
             ],
             measurement_repair_rounds=_expect_nonnegative_int(
                 value, "measurement_repair_rounds"

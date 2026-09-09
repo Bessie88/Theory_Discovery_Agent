@@ -26,7 +26,7 @@ def _negate(label: str) -> str:
 def _evaluate_expression(
     expression: Mapping[str, object], record_id: str, labels_by_alias: LabelMaps
 ) -> str:
-    """Evaluate the closed, three-valued v12 expression language.
+    """Evaluate the closed, three-valued expression language.
 
     The rules deliberately propagate uncertainty: a composite is PRESENT or
     ABSENT only when that conclusion follows from its frozen component labels.

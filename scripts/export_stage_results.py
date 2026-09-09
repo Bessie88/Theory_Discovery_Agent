@@ -35,45 +35,6 @@ def export(project_dir: Path, output_dir: Path) -> None:
         write_json(output_dir / "00_run_status.json", {"state_available": False})
         return
     state = json.loads(state_path.read_text(encoding="utf-8"))
-    active_measurement_ids = {
-        str(item.get("id", ""))
-        for item in state.get("measurement_specifications", [])
-        if isinstance(item, dict)
-    }
-    active_contracts = {
-        (
-            str(item.get("id", "")),
-            str(item.get("specification_hash", "")),
-        )
-        for item in state.get("falsification_specifications", [])
-        if isinstance(item, dict)
-    }
-    active_contract_ids = {contract_id for contract_id, _ in active_contracts}
-    active_readiness = [
-        item
-        for item in state.get("readiness_assessments", [])
-        if isinstance(item, dict)
-        and (
-            (
-                item.get("parent_type") == "measurement"
-                and item.get("parent_id") in active_measurement_ids
-            )
-            or (
-                item.get("parent_type") == "falsification_specification"
-                and item.get("parent_id") in active_contract_ids
-            )
-        )
-    ]
-    active_validation_results = [
-        item
-        for item in state.get("validation_results", [])
-        if isinstance(item, dict)
-        and (
-            str(item.get("falsification_specification_id", "")),
-            str(item.get("specification_hash", "")),
-        )
-        in active_contracts
-    ]
     counts = {
         "discovery_documents": len(state.get("discovery_documents", [])),
         "graph_nodes": len(state.get("graph_nodes", [])),
@@ -85,21 +46,12 @@ def export(project_dir: Path, output_dir: Path) -> None:
         "falsification_specifications": len(
             state.get("falsification_specifications", [])
         ),
-        "legacy_falsification_specifications": len(
-            state.get("legacy_falsification_specifications", [])
-        ),
         "measurement_specifications": len(
             state.get("measurement_specifications", [])
         ),
         "measurement_runs": len(state.get("measurement_runs", [])),
-        "active_readiness_assessments": len(active_readiness),
-        "archived_legacy_readiness_assessments": len(
-            state.get("readiness_assessments", [])
-        ) - len(active_readiness),
-        "active_validation_results": len(active_validation_results),
-        "archived_legacy_validation_results": len(
-            state.get("validation_results", [])
-        ) - len(active_validation_results),
+        "readiness_assessments": len(state.get("readiness_assessments", [])),
+        "validation_results": len(state.get("validation_results", [])),
     }
     write_json(
         output_dir / "00_run_status.json",
@@ -119,19 +71,12 @@ def export(project_dir: Path, output_dir: Path) -> None:
         write_json(output_dir / file_name, {key: state.get(key, []) for key in keys})
     write_json(
         output_dir / "05_readiness_assessments.json",
-        {"readiness_assessments": active_readiness},
+        {"readiness_assessments": state.get("readiness_assessments", [])},
     )
     write_json(
         output_dir / "07_validation_records.json",
-        {"validation_results": active_validation_results},
+        {"validation_results": state.get("validation_results", [])},
     )
-    # These were stale v9 exports.  Legacy objects remain in the canonical
-    # state for audit, but must not sit beside active v13 stage results.
-    for obsolete_name in (
-        "05_legacy_falsification_tests.json",
-        "06_validation_records.json",
-    ):
-        (output_dir / obsolete_name).unlink(missing_ok=True)
     events = project_dir / "events.jsonl"
     if events.exists():
         (output_dir / "07_workflow_events.jsonl").write_text(
