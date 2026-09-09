@@ -1,5 +1,5 @@
 {
-  "canonical_state": "/scratch/yucai/prime_theory/prime-theory-agent/research/school-burnout-psychological-distress-heldout-qwen38/project/state.json",
+  "canonical_state": " ",
   "counts": {
     "candidate_relationships": 6,
     "discovery_documents": 7,
@@ -14,7 +14,7 @@
     "theories": 4,
     "validation_results": 8
   },
-  "event_log": "/scratch/yucai/prime_theory/prime-theory-agent/research/school-burnout-psychological-distress-heldout-qwen38/project/events.jsonl",
+  "event_log": " ",
   "revision": 148,
   "schema_version": 13,
   "state_available": true,
