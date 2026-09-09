@@ -39,14 +39,3 @@ theory.
   not bundle the full runtime or model weights.
 - `workflow/` — the complete canonical theory-discovery implementation, all
   discovery / measurement / compiler prompts, and the workflow test suite.
-
-## GitHub upload
-
-From this repository root, commit only this directory unless you separately
-intend to publish other worktree changes:
-
-```bash
-git add teacher-report-package
-git commit -m "Add held-out school-burnout report package"
-git push
-```
