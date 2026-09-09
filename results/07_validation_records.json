@@ -3,7 +3,6 @@
     {
       "created_at": "2026-09-08T03:45:50.723624+00:00",
       "evidence": [],
-      "execution_artifact": "validation-execution/pred_intrusion_cooccur.py",
       "falsification_specification_id": "fals_pred_intrusion_cooccur",
       "id": "validation_pred_intrusion_cooccur",
       "prediction_id": "pred_intrusion_cooccur",
@@ -15,7 +14,6 @@
     {
       "created_at": "2026-09-08T03:45:50.968512+00:00",
       "evidence": [],
-      "execution_artifact": "validation-execution/pred_worry_tiredness.py",
       "falsification_specification_id": "fals_pred_worry_tiredness",
       "id": "validation_pred_worry_tiredness",
       "prediction_id": "pred_worry_tiredness",
@@ -27,7 +25,6 @@
     {
       "created_at": "2026-09-08T03:45:51.230737+00:00",
       "evidence": [],
-      "execution_artifact": "validation-execution/pred_inadequacy_loop.py",
       "falsification_specification_id": "fals_pred_inadequacy_loop",
       "id": "validation_pred_inadequacy_loop",
       "prediction_id": "pred_inadequacy_loop",
@@ -39,7 +36,6 @@
     {
       "created_at": "2026-09-08T03:45:51.460513+00:00",
       "evidence": [],
-      "execution_artifact": "validation-execution/pred_monitoring_drains.py",
       "falsification_specification_id": "fals_pred_monitoring_drains",
       "id": "validation_pred_monitoring_drains",
       "prediction_id": "pred_monitoring_drains",
@@ -51,7 +47,6 @@
     {
       "created_at": "2026-09-08T03:45:51.697808+00:00",
       "evidence": [],
-      "execution_artifact": "validation-execution/pred_resttime_marker.py",
       "falsification_specification_id": "fals_pred_resttime_marker",
       "id": "validation_pred_resttime_marker",
       "prediction_id": "pred_resttime_marker",
@@ -63,7 +58,6 @@
     {
       "created_at": "2026-09-08T03:45:51.925494+00:00",
       "evidence": [],
-      "execution_artifact": "validation-execution/pred_burden_depletion.py",
       "falsification_specification_id": "fals_pred_burden_depletion",
       "id": "validation_pred_burden_depletion",
       "prediction_id": "pred_burden_depletion",
@@ -75,7 +69,6 @@
     {
       "created_at": "2026-09-08T03:45:52.154315+00:00",
       "evidence": [],
-      "execution_artifact": "validation-execution/pred_meaning_collapse.py",
       "falsification_specification_id": "fals_pred_meaning_collapse",
       "id": "validation_pred_meaning_collapse",
       "prediction_id": "pred_meaning_collapse",
@@ -87,7 +80,6 @@
     {
       "created_at": "2026-09-08T03:45:52.394886+00:00",
       "evidence": [],
-      "execution_artifact": "validation-execution/pred_anxiety_attenuated.py",
       "falsification_specification_id": "fals_pred_anxiety_attenuated",
       "id": "validation_pred_anxiety_attenuated",
       "prediction_id": "pred_anxiety_attenuated",

@@ -1,8 +1,7 @@
 # Theory-discovery report
 
 This is the minimal, review-ready package for the completed held-out run, built on the Prime orchestration architecture. It
-contains the final results, frozen method contracts, audit metadata, and the
-small deterministic execution receipts needed to inspect every conclusion.
+contains the final results and frozen method contracts.
 
 ## Headline result
 
@@ -30,12 +29,8 @@ theory.
 
 - `methods/` — graph, theories, predictions, original falsification tests,
   frozen atomic questions, and frozen execution contracts.
-- `results/` — the eight current held-out results plus one JSON result and one
-  deterministic Python receipt per prediction.
-- `audit/` — run status, readiness, 16 measurement-run hashes, and the declared
-  held-out partition schema.
+- `results/` — the eight current held-out results.
 - `scripts/` — the measurement, deterministic execution, and export code used
   by the run. They are included for inspection; this package intentionally does
   not bundle the full runtime or model weights.
-- `workflow/` — the complete canonical theory-discovery implementation, all
-  discovery / measurement / compiler prompts, and the workflow test suite.
+- `workflow/` — the canonical theory-discovery implementation and prompts.
