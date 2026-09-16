@@ -45,6 +45,7 @@ def skip_failed_stage(project: Any, action: str, reason: str) -> dict[str, Any]:
         _extend_unique(state.relationally_analyzed_record_ids, record_ids)
         state.pending_relational_payload = None
         state.pending_relational_record_ids = []
+        state.pending_relational_review_results = []
         state.relational_validation_feedback = []
         state.relational_validation_attempts = 0
         state.relational_validation_blocked = False

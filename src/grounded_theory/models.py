@@ -61,10 +61,26 @@ class Relationship:
         "explicitly_expressed", "repeated_comparison", "tentative_theoretical_inference"
     ] = "tentative_theoretical_inference"
     grounding_explanation: str = ""
+    conditions: list[str] = field(default_factory=list)
     variations: list[dict[str, Any]] = field(default_factory=list)
     negative_cases: list[Evidence] = field(default_factory=list)
     status: GroundingStatus = "tentative"
     memo_ids: list[str] = field(default_factory=list)
+
+
+@dataclass(slots=True)
+class ProcessEdge:
+    """One reviewed arrow in a process pathway.
+
+    A process is not accepted merely because it names supporting records.  Its
+    arrows retain the direct relationships that warrant each transition.
+    """
+
+    source_concept_id: str
+    relationship: str
+    target_concept_id: str
+    supporting_relation_ids: list[str] = field(default_factory=list)
+    conditions: list[str] = field(default_factory=list)
 
 
 @dataclass(slots=True)
@@ -77,6 +93,7 @@ class Process:
     consequences: list[str] = field(default_factory=list)
     subsequent_changes: list[str] = field(default_factory=list)
     alternative_pathways: list[str] = field(default_factory=list)
+    edges: list[ProcessEdge] = field(default_factory=list)
     supporting_relation_ids: list[str] = field(default_factory=list)
     supporting_record_ids: list[str] = field(default_factory=list)
     negative_cases: list[Evidence] = field(default_factory=list)
@@ -167,6 +184,10 @@ class GroundedTheoryState:
     relationally_analyzed_record_ids: list[str] = field(default_factory=list)
     pending_relational_payload: dict[str, Any] | None = None
     pending_relational_record_ids: list[str] = field(default_factory=list)
+    # One independent reviewer result for each staged relationship or process edge.
+    # This is durable so an interrupted review resumes at the next claim rather
+    # than recreating a conversation or accepting a partly reviewed batch.
+    pending_relational_review_results: list[dict[str, Any]] = field(default_factory=list)
     relational_validation_feedback: list[str] = field(default_factory=list)
     relational_validation_attempts: int = 0
     relational_validation_blocked: bool = False

@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
 import time
 from pathlib import Path
 from typing import Any, Callable
@@ -16,8 +18,18 @@ from .project import GroundedTheoryProject
 DEFAULT_OUTPUT_TOKENS = {
     "open_coding": 6144,
     "relational_process_analysis": 6144,
-    "validate_relational_grounding": 2048,
+    "validate_relational_grounding": 4096,
     "theoretical_integration": 8192,
+}
+
+# These limits reserve each action's bounded output budget inside the local
+# Qwen 32k context window.  They are a guardrail: no packet is silently
+# shortened to fit, because omitted counterevidence would change the method.
+DEFAULT_INPUT_TOKENS = {
+    "open_coding": 24000,
+    "relational_process_analysis": 24000,
+    "validate_relational_grounding": 27000,
+    "theoretical_integration": 22000,
 }
 
 SYSTEM_PROMPT = """You are a careful Grounded Theory analyst working on one isolated transaction.
@@ -31,6 +43,10 @@ validator before it can be committed."""
 
 class CompletionError(RuntimeError):
     """A local model request or its response could not produce a usable object."""
+
+
+class PacketTooLargeError(CompletionError):
+    """The orchestrator must split or explicitly retain an oversized packet."""
 
 
 Completion = Callable[[dict[str, Any], str | None], dict[str, Any]]
@@ -68,6 +84,28 @@ def build_chat_request(
             {"role": "user", "content": instruction},
         ],
     }
+
+
+def packet_token_estimate(packet: dict[str, Any]) -> int:
+    """Conservative deterministic estimate for UTF-8 JSON packet size."""
+    encoded = json.dumps(packet, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    return (len(encoded) + 2) // 3
+
+
+def ensure_packet_within_budget(
+    packet: dict[str, Any], input_tokens: dict[str, int] | None = None
+) -> None:
+    action = packet.get("action")
+    budget = (input_tokens or DEFAULT_INPUT_TOKENS).get(action)
+    if budget is None:
+        raise CompletionError(f"no input-token budget for action: {action!r}")
+    estimate = packet_token_estimate(packet)
+    if estimate > budget:
+        raise PacketTooLargeError(
+            f"{action} packet estimates {estimate} input tokens (limit {budget}); "
+            "no evidence was dropped and this uncommitted transaction must be split, "
+            "reduced, or explicitly retained for intervention"
+        )
 
 
 def parse_completion(response: dict[str, Any]) -> dict[str, Any]:
@@ -158,6 +196,161 @@ class LocalQwenClient:
         return value
 
 
+class PrimeQwenClient:
+    """Run one disposable Prime transaction against the runner-owned Qwen server.
+
+    Prime receives no tools, skills, context files, session, or prior messages.
+    The run directory contains only its local model configuration; project JSON
+    remains the sole persistent analytic memory.
+    """
+
+    provider_name = "grounded-theory-local-qwen"
+
+    def __init__(
+        self,
+        *,
+        prime_command: str | Path,
+        prime_agent_dir: str | Path,
+        cwd: str | Path,
+        endpoint: str,
+        model: str,
+        timeout_seconds: int,
+        output_tokens: dict[str, int] | None = None,
+        input_tokens: dict[str, int] | None = None,
+    ) -> None:
+        self.prime_command = Path(prime_command)
+        self.prime_agent_dir = Path(prime_agent_dir)
+        self.cwd = Path(cwd)
+        self.endpoint = endpoint
+        self.model = model
+        self.timeout_seconds = timeout_seconds
+        self.output_tokens = output_tokens or DEFAULT_OUTPUT_TOKENS
+        self.input_tokens = input_tokens or DEFAULT_INPUT_TOKENS
+
+    def complete(self, packet: dict[str, Any], repair_feedback: str | None = None) -> dict[str, Any]:
+        ensure_packet_within_budget(packet, self.input_tokens)
+        action = packet.get("action")
+        max_tokens = self.output_tokens.get(action) if isinstance(action, str) else None
+        if max_tokens is None:
+            raise CompletionError(f"no output-token budget for action: {action!r}")
+        self._write_model_config(max_tokens)
+        try:
+            response = subprocess.run(
+                self._command(self._instruction(packet, repair_feedback)),
+                cwd=self.cwd,
+                env=self._environment(),
+                text=True,
+                capture_output=True,
+                timeout=self.timeout_seconds,
+                check=False,
+            )
+        except OSError as error:
+            raise CompletionError(f"could not start Prime: {error}") from error
+        except subprocess.TimeoutExpired as error:
+            raise CompletionError("Prime transaction timed out") from error
+        if response.returncode != 0:
+            detail = response.stderr.strip() or response.stdout.strip() or "no diagnostic"
+            raise CompletionError(f"Prime transaction failed ({response.returncode}): {detail}")
+        return _parse_json_text(response.stdout)
+
+    def _command(self, instruction: str) -> list[str]:
+        command = [str(self.prime_command)]
+        if self.prime_command.exists() and not os.access(self.prime_command, os.X_OK):
+            command.insert(0, "bash")
+        return [
+            *command,
+            "--print",
+            "--mode",
+            "text",
+            "--no-session",
+            "--no-tools",
+            "--no-skills",
+            "--no-extensions",
+            "--no-context-files",
+            "--cwd",
+            str(self.cwd),
+            "--provider",
+            self.provider_name,
+            "--model",
+            self.model,
+            "--thinking",
+            "off",
+            "--system-prompt",
+            SYSTEM_PROMPT,
+            instruction,
+        ]
+
+    def _environment(self) -> dict[str, str]:
+        environment = os.environ.copy()
+        environment["PRIME_AGENT_CODING_AGENT_DIR"] = str(self.prime_agent_dir)
+        environment["PRIME_AGENT_SESSION_DIR"] = str(self.prime_agent_dir / "sessions")
+        return environment
+
+    def _write_model_config(self, max_tokens: int) -> None:
+        write_json(
+            self.prime_agent_dir / "models.json",
+            {
+                "providers": {
+                    self.provider_name: {
+                        "baseUrl": _prime_base_url(self.endpoint),
+                        "api": "openai-completions",
+                        "apiKey": "local",
+                        "authHeader": False,
+                        "compat": {
+                            "supportsDeveloperRole": False,
+                            "supportsReasoningEffort": False,
+                        },
+                        "models": [
+                            {
+                                "id": self.model,
+                                "name": self.model,
+                                "reasoning": False,
+                                "input": ["text"],
+                                "contextWindow": 32768,
+                                "maxTokens": max_tokens,
+                                "cost": {
+                                    "input": 0,
+                                    "output": 0,
+                                    "cacheRead": 0,
+                                    "cacheWrite": 0,
+                                },
+                            }
+                        ],
+                    }
+                }
+            },
+        )
+
+    @staticmethod
+    def _instruction(packet: dict[str, Any], repair_feedback: str | None) -> str:
+        request = build_chat_request(
+            packet,
+            model="unused-by-prime",
+            max_tokens=0,
+            repair_feedback=repair_feedback,
+        )
+        return str(request["messages"][1]["content"])
+
+
+def _prime_base_url(endpoint: str) -> str:
+    suffix = "/chat/completions"
+    normalized = endpoint.rstrip("/")
+    return normalized[: -len(suffix)] if normalized.endswith(suffix) else normalized
+
+
+def _parse_json_text(output: str) -> dict[str, Any]:
+    content = output.strip()
+    if content.startswith("```json") and content.endswith("```"):
+        content = content[len("```json") : -3].strip()
+    try:
+        payload = json.loads(content)
+    except json.JSONDecodeError as error:
+        raise CompletionError(f"Prime returned invalid JSON: {error.msg}") from error
+    if not isinstance(payload, dict):
+        raise CompletionError("Prime result must be one JSON object")
+    return payload
+
+
 def execute_stage(
     project: GroundedTheoryProject,
     complete: Completion,
@@ -171,6 +364,7 @@ def execute_stage(
         raise ValueError("attempts must be positive")
     packet = project.task_packet()
     write_json(Path(packet_path), packet)
+    ensure_packet_within_budget(packet)
     feedback: str | None = None
     failures: list[str] = []
     destination = Path(result_path)

@@ -94,8 +94,50 @@ def relational_output_schema(record_ids: list[str]) -> dict[str, Any]:
                 "contradiction": "required for CONTRADICTION",
             }
         ],
-        "process_updates": [],
+        "process_updates": [
+            {
+                "comparison": "SAME|VARIATION|NEW|CONTRADICTION",
+                "existing_process_id": "required except NEW",
+                "label": "required for NEW",
+                "description": "required for NEW",
+                "conditions": [],
+                "actions_interactions": [],
+                "consequences": [],
+                "subsequent_changes": [],
+                "alternative_pathways": [],
+                "edges": [
+                    {
+                        "source_concept_id": "concept ID",
+                        "relationship": "the direct relationship phrase for this arrow",
+                        "target_concept_id": "concept ID",
+                        "supporting_relation_ids": ["existing direct relationship ID"],
+                        "supporting_relationship_update_indexes": [
+                            "zero-based index of a relationship_updates item in this submission"
+                        ],
+                        "conditions": [],
+                    }
+                ],
+                "supporting_record_ids": ["record ID"],
+                "negative_cases": [{"record_id": "record ID", "text_span": "verbatim quote"}],
+                "status": "well_grounded|tentative|insufficient_evidence",
+                "variation": "required for VARIATION",
+                "contradiction": "required for CONTRADICTION",
+            }
+        ],
         "memo_updates": [memo_update_schema()],
+    }
+
+
+def relational_grounding_review_output_schema() -> dict[str, Any]:
+    """One reviewer transaction decides exactly one traceable claim."""
+    return {
+        "claim_id": "exactly the supplied review_claim.claim_id",
+        "decision": "RETAIN|NARROW|REJECT",
+        "assessment": "explicitly_expressed|repeated_comparison|tentative_theoretical_inference|unsupported",
+        "status": "well_grounded|tentative|insufficient_evidence",
+        "revised_relationship": "required only when review_claim.claim_type is relationship and decision is NARROW",
+        "conditions": ["required for NARROW; otherwise []"],
+        "rationale": "why this claim's supporting and counterevidence warrants the decision",
     }
 
 

@@ -19,6 +19,7 @@ from .models import (
     Memo,
     NegativeCase,
     Process,
+    ProcessEdge,
     QualitativeRecord,
     Relationship,
     TheoreticalProposition,
@@ -34,7 +35,7 @@ from .validation import (
 )
 
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 STATE_FILE = "analysis_state.json"
 EVENTS_FILE = "events.jsonl"
 
@@ -84,7 +85,7 @@ def write_json(path: Path, value: Any) -> None:
 
 
 def state_from_dict(raw: dict[str, Any]) -> GroundedTheoryState:
-    if not isinstance(raw, dict) or raw.get("schema_version") not in {1, SCHEMA_VERSION}:
+    if not isinstance(raw, dict) or raw.get("schema_version") not in {1, 2, SCHEMA_VERSION}:
         raise ValueError("unsupported Grounded Theory state schema")
     records = [QualitativeRecord(**item) for item in object_list(raw, "records")]
     validate_records(records)
@@ -125,6 +126,9 @@ def state_from_dict(raw: dict[str, Any]) -> GroundedTheoryState:
         pending_relational_record_ids=string_list(
             raw, "pending_relational_record_ids", allow_empty=True
         ),
+        pending_relational_review_results=object_list(
+            raw, "pending_relational_review_results", allow_empty=True
+        ),
         relational_validation_feedback=string_list(
             raw, "relational_validation_feedback", allow_empty=True
         ),
@@ -151,6 +155,7 @@ def relationship_from_dict(raw: dict[str, Any]) -> Relationship:
     copied["negative_cases"] = [
         evidence_from_dict(item) for item in object_list(raw, "negative_cases")
     ]
+    copied.setdefault("conditions", [])
     return Relationship(**copied)
 
 
@@ -158,6 +163,16 @@ def process_from_dict(raw: dict[str, Any]) -> Process:
     copied = dict(raw)
     copied["negative_cases"] = [
         evidence_from_dict(item) for item in object_list(raw, "negative_cases")
+    ]
+    copied["edges"] = [
+        ProcessEdge(
+            source_concept_id=text(item, "source_concept_id"),
+            relationship=text(item, "relationship"),
+            target_concept_id=text(item, "target_concept_id"),
+            supporting_relation_ids=string_list(item, "supporting_relation_ids", allow_empty=True),
+            conditions=string_list(item, "conditions", allow_empty=True),
+        )
+        for item in object_list(raw, "edges", allow_empty=True)
     ]
     return Process(**copied)
 
