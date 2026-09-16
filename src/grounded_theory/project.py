@@ -15,6 +15,7 @@ from .packets import (
     integration_output_schema,
     load_prompt,
     open_coding_output_schema,
+    relational_grounding_review_output_schema,
     relational_output_schema,
 )
 from .persistence import (
@@ -29,6 +30,7 @@ from .persistence import (
     write_json,
 )
 from .relational import apply_relational_analysis, apply_relational_grounding_validation
+from .review import next_relational_review_material
 from .validation import object_list, remaining_record_ids
 
 
@@ -166,6 +168,7 @@ class GroundedTheoryProject:
         self.state.relationally_analyzed_record_ids.extend(record_ids)
         self.state.pending_relational_payload = None
         self.state.pending_relational_record_ids = []
+        self.state.pending_relational_review_results = []
         self.state.relational_validation_feedback = []
         self.state.relational_validation_attempts = 0
         self.state.relational_validation_blocked = False
@@ -204,10 +207,20 @@ class GroundedTheoryProject:
                 "reason": "records need open coding and comparison with the live concept inventory",
             }
         if self.state.pending_relational_payload is not None:
+            review_material = next_relational_review_material(
+                self.state,
+                self.state.pending_relational_payload,
+                self.state.pending_relational_review_results,
+            )
+            if review_material is None:
+                raise RuntimeError("pending relational review has no remaining claim")
             return {
                 "action": "validate_relational_grounding",
                 "record_ids": list(self.state.pending_relational_record_ids),
-                "reason": "candidate relationships require an independent grounding check before commit",
+                "reason": (
+                    "one candidate relationship or process arrow requires an independent "
+                    f"counterevidence review before commit: {review_material['review_claim']['claim_id']}"
+                ),
             }
         remaining_relational = remaining_record_ids(
             self.state.records, self.state.relationally_analyzed_record_ids
@@ -326,13 +339,17 @@ class GroundedTheoryProject:
         return packet
 
     def _grounding_review_packet(self, packet: dict[str, Any], record_ids: list[str]) -> dict[str, Any]:
+        review_material = next_relational_review_material(
+            self.state,
+            self.state.pending_relational_payload or {},
+            self.state.pending_relational_review_results,
+        )
+        if review_material is None:
+            raise RuntimeError("pending relational review has no remaining claim")
         packet.update({
-            "records": self._records_for_ids(record_ids),
-            "concept_inventory": self._packet_concept_inventory(),
-            "relation_inventory": self._packet_relation_inventory(),
-            "candidate_submission": self.state.pending_relational_payload,
+            **review_material,
             "prompt": load_prompt("gt-02b-validate-relational-grounding.md"),
-            "expected_output": {"verdict": "PASS|FAIL", "issues": ["specific unsupported relationship or process issue"]},
+            "expected_output": relational_grounding_review_output_schema(),
         })
         return packet
 
@@ -342,14 +359,17 @@ class GroundedTheoryProject:
         preview = deepcopy(self.state)
         preview_event = apply_relational_analysis(preview, payload, self.next_action())
         relation_updates = object_list(payload, "relationship_updates", allow_empty=True)
-        if not relation_updates:
+        process_updates = object_list(payload, "process_updates", allow_empty=True)
+        if not relation_updates and not process_updates:
             return apply_relational_analysis(trial, payload, self.next_action()), action
         trial.pending_relational_payload = deepcopy(payload)
         trial.pending_relational_record_ids = list(self.next_action()["record_ids"])
+        trial.pending_relational_review_results = []
         return (
             {
                 "record_ids": trial.pending_relational_record_ids,
                 "relationship_updates": len(relation_updates),
+                "process_updates": len(process_updates),
                 "validation_preview": preview_event,
             },
             "relational_analysis_staged",
