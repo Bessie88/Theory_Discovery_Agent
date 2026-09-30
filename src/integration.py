@@ -140,5 +140,8 @@ def integration_evidence(
             process = processes[process_id]
             for relation_id in process.supporting_relation_ids:
                 evidence.extend(relations[relation_id].evidence)
+            for edge in process.edges:
+                evidence.extend(edge.supporting_evidence)
+                evidence.extend(edge.negative_evidence)
             evidence.extend(process.negative_cases)
     return dedupe_evidence(evidence)

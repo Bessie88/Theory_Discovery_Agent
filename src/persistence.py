@@ -12,18 +12,23 @@ from typing import Any
 
 from .models import (
     Concept,
+    DeferredRelationalRecord,
     Evidence,
     GroundedTheoryConfig,
     GroundedTheoryState,
     IntegratedTheory,
     Memo,
     NegativeCase,
+    OpenCodingJudgment,
     Process,
     ProcessEdge,
+    ProcessEdgeReview,
+    PromptAdaptationConfig,
     QualitativeRecord,
     Relationship,
     TheoreticalProposition,
     TheoreticalSamplingNeed,
+    utc_now,
 )
 from .validation import (
     evidence_from_dict,
@@ -35,7 +40,7 @@ from .validation import (
 )
 
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 6
 STATE_FILE = "analysis_state.json"
 EVENTS_FILE = "events.jsonl"
 
@@ -85,22 +90,41 @@ def write_json(path: Path, value: Any) -> None:
 
 
 def state_from_dict(raw: dict[str, Any]) -> GroundedTheoryState:
-    if not isinstance(raw, dict) or raw.get("schema_version") not in {1, 2, SCHEMA_VERSION}:
+    if not isinstance(raw, dict) or raw.get("schema_version") not in {1, 2, 3, 4, 5, SCHEMA_VERSION}:
         raise ValueError("unsupported Grounded Theory state schema")
     records = [QualitativeRecord(**item) for item in object_list(raw, "records")]
     validate_records(records)
     integrated_raw = raw.get("integrated_theory")
+    processes = [process_from_dict(item) for item in object_list(raw, "processes")]
+    process_edge_review_cache = [
+        process_edge_review_from_dict(item)
+        for item in object_list(raw, "process_edge_review_cache", allow_empty=True)
+    ]
+    _backfill_process_edge_review_cache(process_edge_review_cache, processes)
+    config_raw = object_value(raw, "config")
+    prompt_adaptation_raw = config_raw.get("prompt_adaptation", {})
+    if not isinstance(prompt_adaptation_raw, dict):
+        raise ValueError("config.prompt_adaptation must be an object")
+    config_raw = dict(config_raw)
+    config_raw["prompt_adaptation"] = PromptAdaptationConfig(**prompt_adaptation_raw)
+    config = GroundedTheoryConfig(**config_raw)
+    if (
+        type(config.relational_max_defer_count) is not int
+        or config.relational_max_defer_count < 1
+    ):
+        raise ValueError("config.relational_max_defer_count must be a positive integer")
     return GroundedTheoryState(
         schema_version=SCHEMA_VERSION,
         revision=int(raw.get("revision", 0)),
-        config=GroundedTheoryConfig(**object_value(raw, "config")),
+        config=config,
         analysis_metadata=dict(raw.get("analysis_metadata", {})),
         records=records,
         concepts=[concept_from_dict(item) for item in object_list(raw, "concepts")],
         relationships=[
             relationship_from_dict(item) for item in object_list(raw, "relationships")
         ],
-        processes=[process_from_dict(item) for item in object_list(raw, "processes")],
+        processes=processes,
+        process_edge_review_cache=process_edge_review_cache,
         memos=[memo_from_dict(item) for item in object_list(raw, "memos")],
         negative_cases=[
             negative_case_from_dict(item) for item in object_list(raw, "negative_cases")
@@ -115,9 +139,17 @@ def state_from_dict(raw: dict[str, Any]) -> GroundedTheoryState:
             else None
         ),
         open_coded_record_ids=string_list(raw, "open_coded_record_ids", allow_empty=True),
+        open_coding_judgments=[
+            open_coding_judgment_from_dict(item)
+            for item in object_list(raw, "open_coding_judgments", allow_empty=True)
+        ],
         relationally_analyzed_record_ids=string_list(
             raw, "relationally_analyzed_record_ids", allow_empty=True
         ),
+        deferred_relational_records=[
+            deferred_relational_record_from_dict(item)
+            for item in object_list(raw, "deferred_relational_records", allow_empty=True)
+        ],
         pending_relational_payload=(
             object_value(raw, "pending_relational_payload")
             if isinstance(raw.get("pending_relational_payload"), dict)
@@ -134,6 +166,53 @@ def state_from_dict(raw: dict[str, Any]) -> GroundedTheoryState:
         ),
         relational_validation_attempts=int(raw.get("relational_validation_attempts", 0)),
         relational_validation_blocked=bool(raw.get("relational_validation_blocked", False)),
+        prompt_adaptation_state=object_value(raw, "prompt_adaptation_state")
+        if isinstance(raw.get("prompt_adaptation_state"), dict)
+        else {},
+        pending_relational_adaptation_context=(
+            object_value(raw, "pending_relational_adaptation_context")
+            if isinstance(raw.get("pending_relational_adaptation_context"), dict)
+            else None
+        ),
+        pending_prompt_adaptation_failure_extraction=(
+            object_value(raw, "pending_prompt_adaptation_failure_extraction")
+            if isinstance(raw.get("pending_prompt_adaptation_failure_extraction"), dict)
+            else None
+        ),
+    )
+
+
+def open_coding_judgment_from_dict(raw: dict[str, Any]) -> OpenCodingJudgment:
+    disposition = text(raw, "disposition")
+    allowed = {
+        "SUPPORTS_EXISTING", "VARIATION", "BOUNDARY", "POSSIBLE_NEW",
+        "NO_RELEVANT_MECHANISM",
+    }
+    if disposition not in allowed:
+        raise ValueError("open_coding_judgments.disposition is invalid")
+    evidence_raw = raw.get("evidence")
+    if evidence_raw is not None and not isinstance(evidence_raw, dict):
+        raise ValueError("open_coding_judgments.evidence must be an object or null")
+    return OpenCodingJudgment(
+        record_id=text(raw, "record_id"),
+        disposition=disposition,  # type: ignore[arg-type]
+        rationale=text(raw, "rationale"),
+        concept_id=optional_text(raw, "concept_id"),
+        evidence=evidence_from_dict(evidence_raw) if evidence_raw is not None else None,
+        candidate_label=optional_text(raw, "candidate_label"),
+    )
+
+
+def deferred_relational_record_from_dict(raw: dict[str, Any]) -> DeferredRelationalRecord:
+    """Load a durable Stage-2 deferral without accepting malformed retry counts."""
+    defer_count = raw.get("defer_count", 1)
+    if type(defer_count) is not int or defer_count < 1:
+        raise ValueError("deferred_relational_records.defer_count must be a positive integer")
+    return DeferredRelationalRecord(
+        record_id=text(raw, "record_id"),
+        reason=text(raw, "reason"),
+        defer_count=defer_count,
+        last_deferred_at=optional_text(raw, "last_deferred_at") or utc_now(),
     )
 
 
@@ -144,6 +223,7 @@ def concept_from_dict(raw: dict[str, Any]) -> Concept:
         evidence_from_dict(item) for item in object_list(raw, "negative_or_boundary_cases")
     ]
     copied.setdefault("definition_revisions", [])
+    copied.setdefault("last_modified_revision", 0)
     return Concept(**copied)
 
 
@@ -171,10 +251,78 @@ def process_from_dict(raw: dict[str, Any]) -> Process:
             target_concept_id=text(item, "target_concept_id"),
             supporting_relation_ids=string_list(item, "supporting_relation_ids", allow_empty=True),
             conditions=string_list(item, "conditions", allow_empty=True),
+            supporting_record_ids=string_list(item, "supporting_record_ids", allow_empty=True),
+            supporting_evidence=[
+                evidence_from_dict(value)
+                for value in object_list(item, "supporting_evidence", allow_empty=True)
+            ],
+            reviewer_rationale=optional_text(item, "reviewer_rationale") or "",
+            boundary_conditions=string_list(item, "boundary_conditions", allow_empty=True),
+            negative_evidence=[
+                evidence_from_dict(value)
+                for value in object_list(item, "negative_evidence", allow_empty=True)
+            ],
+            status=optional_text(item, "status") or "tentative",
         )
         for item in object_list(raw, "edges", allow_empty=True)
     ]
     return Process(**copied)
+
+
+def process_edge_review_from_dict(raw: dict[str, Any]) -> ProcessEdgeReview:
+    return ProcessEdgeReview(
+        source_concept_id=text(raw, "source_concept_id"),
+        relationship=text(raw, "relationship"),
+        target_concept_id=text(raw, "target_concept_id"),
+        supporting_record_ids=string_list(raw, "supporting_record_ids", allow_empty=True),
+        supporting_evidence=[
+            evidence_from_dict(item)
+            for item in object_list(raw, "supporting_evidence", allow_empty=True)
+        ],
+        reviewer_rationale=optional_text(raw, "reviewer_rationale") or "",
+        boundary_conditions=string_list(raw, "boundary_conditions", allow_empty=True),
+        negative_evidence=[
+            evidence_from_dict(item)
+            for item in object_list(raw, "negative_evidence", allow_empty=True)
+        ],
+        status=optional_text(raw, "status") or "tentative",  # type: ignore[arg-type]
+    )
+
+
+def _backfill_process_edge_review_cache(
+    cache: list[ProcessEdgeReview], processes: list[Process]
+) -> None:
+    """Migrate audited independent edges written before the cache field existed.
+
+    An older retained edge is safe to backfill only when it has no formal
+    relation ID *and* already contains the complete process-review audit trail.
+    Edges linked to relationships remain governed by relationship reuse.
+    """
+    known = {(item.source_concept_id, item.target_concept_id) for item in cache}
+    for process in processes:
+        for edge in process.edges:
+            key = edge.source_concept_id, edge.target_concept_id
+            if (
+                key in known
+                or edge.supporting_relation_ids
+                or not edge.reviewer_rationale
+                or not edge.supporting_evidence
+            ):
+                continue
+            cache.append(
+                ProcessEdgeReview(
+                    source_concept_id=edge.source_concept_id,
+                    relationship=edge.relationship,
+                    target_concept_id=edge.target_concept_id,
+                    supporting_record_ids=list(edge.supporting_record_ids),
+                    supporting_evidence=list(edge.supporting_evidence),
+                    reviewer_rationale=edge.reviewer_rationale,
+                    boundary_conditions=list(edge.boundary_conditions),
+                    negative_evidence=list(edge.negative_evidence),
+                    status=edge.status,
+                )
+            )
+            known.add(key)
 
 
 def memo_from_dict(raw: dict[str, Any]) -> Memo:
@@ -226,7 +374,7 @@ def render_analysis_report(state: GroundedTheoryState) -> str:
     )
     lines.extend(["", "## Process patterns", ""])
     lines.extend(
-        f"- `{item.id}` — {item.label}: {item.description} (relations: {', '.join(item.supporting_relation_ids)})"
+        f"- `{item.id}` — {item.label}: {item.description} (relations: {', '.join(item.supporting_relation_ids)}; edges: {', '.join(f'{edge.source_concept_id} {edge.relationship} {edge.target_concept_id} [{edge.status}]' for edge in item.edges)})"
         for item in state.processes
     )
     lines.extend(["", "## Integration", ""])

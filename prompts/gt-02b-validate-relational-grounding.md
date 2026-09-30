@@ -1,54 +1,36 @@
-Independently review exactly one arrow: `review_claim`. Do not propose concepts,
-relations, processes, memos, or new evidence. Use only supplied material. Every
-evidence item must contain a supplied `record_id` and a brief original `quote`.
+Independently review exactly one `review_claim`. Do not propose concepts,
+relations, processes, memos, or new evidence. Use only supplied material; each
+evidence item needs a supplied `record_id` and brief original `quote`.
 
-## Evidence scope
+For a relationship, `review_records` contains support, source-only,
+target-only, and explicit-contradiction cohorts. Cohort labels are retrieval
+aids, not conclusions. For a process edge, read every supplied corpus record:
+plausible sequence, co-occurrence, or indirect A → B → C never establishes an
+edge. With `review_batch`, judge only that batch. With `batch_reviews` and
+`review_synthesis`, synthesize the supplied decisions/counts without inventing
+or rereading unavailable evidence; an `intermediate` synthesis is provisional.
 
-- For a **relationship** claim, `review_records` covers the four retrieval
-  cohorts: support, source-only, target-only, and explicit contradictions.
-  Cohort labels are retrieval aids, not conclusions: judge the wording yourself.
-- For a **process edge**, `requires_full_corpus_review` is true. Read every
-  supplied corpus record; identify support, source-only cases, target-only
-  cases, and explicit counterexamples across the corpus. Plausible sequence,
-  co-occurrence, or an indirect A → B → C chain never establishes an edge.
-- With `review_batch`, decide only the records in that batch; records absent
-  from it are neither support nor counterevidence.
-- With `batch_reviews` and `review_synthesis`, synthesize the supplied batch
-  decisions and cohort counts. Do not invent evidence or reread unavailable
-  text. An `intermediate` synthesis is provisional.
+For a relationship claim, return one decision for its `claim_id`:
 
-## Relationship claim
-
-Return one decision for the supplied `claim_id`:
-
-- `RETAIN` only when the arrow is warranted.
-- `NARROW` when weaker wording or explicit conditions are needed; include
+- `RETAIN` only when warranted.
+- `NARROW` when wording or conditions must change; include
   `revised_relationship` and at least one condition.
 - `REJECT` when unsupported; use `assessment: "unsupported"` and
   `status: "insufficient_evidence"`.
 
-Use `explicitly_expressed` only when one record directly states the arrow.
-`repeated_comparison` and `tentative_theoretical_inference` require support
-from at least two distinct record IDs. Source-only, target-only, contradictory,
-and indirect cases are not extra support. Cross-case patterns stay tentative
-unless a record directly states the link.
+Use `explicitly_expressed` only for a directly stated arrow.
+`repeated_comparison` and `tentative_theoretical_inference` need two distinct
+record IDs. Source-only, target-only, contradictory, and indirect cases are
+not extra support; cross-case patterns remain tentative unless directly stated.
 
-## Process-edge claim
-
-Return only the fields in `expected_output`, not relationship `decision`,
-`assessment`, or `status`.
-
-- `supported`: directly warranted without qualifying conditions.
-- `conditional`: warranted only under named `boundary_conditions`.
-- `tentative`: some direct support, but mixed or unresolved across the corpus.
-- `rejected`: unsupported or contradicted.
-
-Every non-rejected edge needs direct `supporting_evidence`; record explicit
-counterexamples in `negative_evidence`, preserve relevant boundary conditions,
-and explain the judgement in `rationale`. A rejected edge rejects its process
+For a process edge, return only `expected_output`. `supported` is directly
+warranted; `conditional` needs named boundary conditions; `tentative` has
+mixed/unresolved support; `rejected` is unsupported/contradicted. Every
+non-rejected edge needs direct supporting evidence; retain explicit
+counterexamples and relevant boundaries. A rejected edge rejects its process
 as written.
 
-Use plain English for phrases, conditions, and rationale. Keep IDs, enum
-values, JSON keys, and quotes exactly as required. Return JSON only, following
+Use concise plain English for phrases, conditions, and rationale. Keep the
+rationale near 90 words and never above 120 words. Keep IDs, enum values,
+JSON keys, and quotes exactly as required. Return JSON only, following
 `expected_output`.
-

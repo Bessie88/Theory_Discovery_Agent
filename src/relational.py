@@ -6,7 +6,7 @@ from dataclasses import asdict
 from typing import Any
 
 from .memoing import add_analytic_memo, add_negative_case, apply_memo_updates
-from .models import GroundedTheoryState, Process, ProcessEdge, Relationship
+from .models import DeferredRelationalRecord, GroundedTheoryState, Process, ProcessEdge, Relationship
 from .open_coding import apply_concept_updates
 from .review import (
     apply_review_decisions,
@@ -22,13 +22,13 @@ from .validation import (
     evidence_list,
     evidence_list_from_key,
     existing_ids,
-    expected_records,
     extend_evidence,
     extend_unique,
     next_id,
     object_list,
     optional_choice,
     optional_text,
+    relational_record_disposition,
     string_list,
     text,
 )
@@ -43,26 +43,38 @@ GROUNDING_KINDS = {
 
 
 def apply_relational_analysis(
-    state: GroundedTheoryState, payload: dict[str, Any], action: dict[str, Any]
+    state: GroundedTheoryState,
+    payload: dict[str, Any],
+    action: dict[str, Any],
+    *,
+    allow_unreviewed_processes: bool = False,
 ) -> dict[str, Any]:
-    expected = expected_records(payload, action)
+    processed_record_ids, deferred_records = relational_record_disposition(payload, action)
     concept_updates = object_list(payload, "concept_updates", allow_empty=True)
     relation_updates = object_list(payload, "relationship_updates", allow_empty=True)
     process_updates = object_list(payload, "process_updates", allow_empty=True)
     memo_updates = object_list(payload, "memo_updates", allow_empty=True)
+    _reject_deferred_record_references(
+        deferred_records, concept_updates, relation_updates, process_updates, memo_updates
+    )
     concepts_created = apply_concept_updates(
-        state, concept_updates, allowed_record_ids=set(expected)
+        state, concept_updates, allowed_record_ids=set(processed_record_ids)
     )
     relations_before, processes_before = len(state.relationships), len(state.processes)
     relationship_ids = [
         apply_relationship_update(state, update) for update in relation_updates
     ]
     for update in process_updates:
-        apply_process_update(state, update, relationship_ids)
+        if allow_unreviewed_processes:
+            validate_unreviewed_process_update(state, update, relationship_ids)
+        else:
+            apply_process_update(state, update, relationship_ids)
     apply_memo_updates(state, memo_updates, allowed_record_ids=None)
-    state.relationally_analyzed_record_ids.extend(expected)
+    _update_deferred_relational_records(state, processed_record_ids, deferred_records)
+    state.relationally_analyzed_record_ids.extend(processed_record_ids)
     return {
-        "record_ids": expected,
+        "record_ids": processed_record_ids,
+        "deferred_records": deferred_records,
         "concepts_created": concepts_created,
         "concept_updates": len(concept_updates),
         "relationships_created": len(state.relationships) - relations_before,
@@ -71,6 +83,64 @@ def apply_relational_analysis(
         "process_updates": len(process_updates),
         "memo_updates": len(memo_updates),
     }
+
+
+def _reject_deferred_record_references(
+    deferred_records: list[dict[str, str]], *updates: list[dict[str, Any]]
+) -> None:
+    """A deferred incident cannot silently support a committed finding."""
+    deferred_ids = {item["record_id"] for item in deferred_records}
+    if not deferred_ids:
+        return
+    referenced: set[str] = set()
+
+    def collect(value: Any) -> None:
+        if isinstance(value, dict):
+            record_id = value.get("record_id")
+            if isinstance(record_id, str):
+                referenced.add(record_id)
+            supporting = value.get("supporting_record_ids")
+            if isinstance(supporting, list):
+                referenced.update(item for item in supporting if isinstance(item, str))
+            for item in value.values():
+                collect(item)
+        elif isinstance(value, list):
+            for item in value:
+                collect(item)
+
+    for update_group in updates:
+        collect(update_group)
+    overlap = sorted(deferred_ids & referenced)
+    if overlap:
+        raise ValueError(
+            "deferred records cannot be cited by committed Stage-2 updates: "
+            + ", ".join(overlap)
+        )
+
+
+def _update_deferred_relational_records(
+    state: GroundedTheoryState,
+    processed_record_ids: list[str],
+    deferred_records: list[dict[str, str]],
+) -> None:
+    """Persist a FIFO deferral queue with a bounded, observable retry count."""
+    processed = set(processed_record_ids)
+    deferred_by_id = {item["record_id"]: item for item in deferred_records}
+    retained = [
+        item for item in state.deferred_relational_records
+        if item.record_id not in processed and item.record_id not in deferred_by_id
+    ]
+    prior = {item.record_id: item for item in state.deferred_relational_records}
+    refreshed = [
+        DeferredRelationalRecord(
+            record_id=item["record_id"],
+            reason=item["reason"],
+            defer_count=(prior[item["record_id"]].defer_count + 1)
+            if item["record_id"] in prior else 1,
+        )
+        for item in deferred_records
+    ]
+    state.deferred_relational_records = [*retained, *refreshed]
 
 
 def apply_relationship_update(state: GroundedTheoryState, update: dict[str, Any]) -> str:
@@ -186,7 +256,14 @@ def apply_process_update(
         string_list(update, "supporting_record_ids", allow_empty=True),
         "record",
     )
-    negative = evidence_list_from_key(update, "negative_cases", state)
+    edge_record_ids = [
+        record_id for edge in edges for record_id in edge.supporting_record_ids
+    ]
+    record_ids = list(dict.fromkeys([*record_ids, *edge_record_ids]))
+    negative = dedupe_evidence([
+        *evidence_list_from_key(update, "negative_cases", state),
+        *(evidence for edge in edges for evidence in edge.negative_evidence),
+    ])
     relation_evidence = dedupe_evidence(
         [
             evidence
@@ -195,7 +272,14 @@ def apply_process_update(
             for evidence in relation.evidence
         ]
     )
-    memo_evidence = dedupe_evidence([*relation_evidence, *negative])
+    # Keep the process memo traceable even when no existing relationship was
+    # reusable: independently reviewed process-edge evidence is valid support.
+    edge_evidence = [
+        evidence
+        for edge in edges
+        for evidence in _process_edge_supporting_evidence(edge)
+    ]
+    memo_evidence = dedupe_evidence([*relation_evidence, *edge_evidence, *negative])
     if decision == "NEW":
         _create_process(state, update, edges, relation_ids, record_ids, negative, memo_evidence)
         return
@@ -246,8 +330,8 @@ def _create_process(
 ) -> None:
     if optional_text(update, "existing_process_id"):
         raise ValueError("NEW process must not name existing_process_id")
-    if not relation_ids or not record_ids:
-        raise ValueError("a new process needs supporting relations and record IDs")
+    if not record_ids:
+        raise ValueError("a new process needs supporting record IDs")
     process = Process(
         id=next_id(state.processes, "process"),
         label=text(update, "label"),
@@ -279,7 +363,7 @@ def process_edges(
     update: dict[str, Any],
     relationship_update_ids: list[str],
 ) -> list[ProcessEdge]:
-    """Validate every process arrow against a direct relation before review."""
+    """Commit independently reviewed or relation-reused process arrows."""
     raw_edges = object_list(update, "edges", allow_empty=True)
     if not raw_edges:
         raise ValueError("every process update needs explicit, directly supported edges")
@@ -305,18 +389,23 @@ def process_edges(
                 raise ValueError(f"process edge relationship update index is out of range: {index}")
             relation_ids.append(relationship_update_ids[index])
         relation_ids = list(dict.fromkeys(relation_ids))
-        if not relation_ids:
-            raise ValueError("every process edge needs a direct supporting relationship")
         for relation_id in relation_ids:
             relation = by_id(state.relationships, relation_id, "process edge relationship")
             if (
                 relation.source_concept_id != source_id
-                or relation.relationship != phrase
                 or relation.target_concept_id != target_id
             ):
                 raise ValueError(
-                    "a process edge must exactly match each direct supporting relationship"
+                    "a reused process-edge relationship must have the same direction"
                 )
+        edge_status = choice(
+            edge, "edge_status", {"supported", "conditional", "tentative"}
+        )
+        supporting = evidence_list_from_key(edge, "supporting_evidence", state)
+        negative = evidence_list_from_key(edge, "negative_evidence", state)
+        boundary_conditions = string_list(edge, "boundary_conditions", allow_empty=True)
+        if edge_status == "conditional" and not boundary_conditions:
+            raise ValueError("a conditional process edge needs boundary conditions")
         edges.append(
             ProcessEdge(
                 source_concept_id=source_id,
@@ -324,9 +413,83 @@ def process_edges(
                 target_concept_id=target_id,
                 supporting_relation_ids=relation_ids,
                 conditions=string_list(edge, "conditions", allow_empty=True),
+                supporting_record_ids=[item.record_id for item in supporting],
+                supporting_evidence=supporting,
+                reviewer_rationale=text(edge, "reviewer_rationale"),
+                boundary_conditions=boundary_conditions,
+                negative_evidence=negative,
+                status=edge_status,  # type: ignore[arg-type]
             )
         )
     return edges
+
+
+def validate_unreviewed_process_update(
+    state: GroundedTheoryState,
+    update: dict[str, Any],
+    relationship_update_ids: list[str],
+) -> None:
+    """Validate a Stage-2 process candidate without demanding reviewed arrows.
+
+    This preview is used only before the independent edge reviews.  It verifies
+    IDs, cited source text, and update shape while deliberately allowing an
+    edge with no relation ID to proceed to its full-corpus review.
+    """
+    decision = comparison(update)
+    if decision == "NEW":
+        if optional_text(update, "existing_process_id"):
+            raise ValueError("NEW process must not name existing_process_id")
+        text(update, "label")
+        text(update, "description")
+    else:
+        by_id(state.processes, text(update, "existing_process_id"), "process")
+    existing_ids(
+        state.records,
+        string_list(update, "supporting_record_ids", allow_empty=True),
+        "record",
+    )
+    evidence_list_from_key(update, "negative_cases", state)
+    raw_edges = object_list(update, "edges", allow_empty=True)
+    if not raw_edges:
+        raise ValueError("every process update needs explicit directed edges")
+    for edge in raw_edges:
+        source_id = text(edge, "source_concept_id")
+        target_id = text(edge, "target_concept_id")
+        text(edge, "relationship")
+        if source_id == target_id:
+            raise ValueError("a process edge must connect two distinct concepts")
+        by_id(state.concepts, source_id, "process edge source concept")
+        by_id(state.concepts, target_id, "process edge target concept")
+        existing_ids(
+            state.relationships,
+            string_list(edge, "supporting_relation_ids", allow_empty=True),
+            "process edge relationship",
+        )
+        indexes = edge.get("supporting_relationship_update_indexes", [])
+        if not isinstance(indexes, list) or any(type(index) is not int for index in indexes):
+            raise ValueError("supporting_relationship_update_indexes must be an array of integers")
+        if any(index < 0 or index >= len(relationship_update_ids) for index in indexes):
+            raise ValueError("process edge relationship update index is out of range")
+        referenced_relation_ids = [
+            *string_list(edge, "supporting_relation_ids", allow_empty=True),
+            *(relationship_update_ids[index] for index in indexes),
+        ]
+        for relation_id in referenced_relation_ids:
+            relation = by_id(state.relationships, relation_id, "process edge relationship")
+            if (
+                relation.source_concept_id != source_id
+                or relation.target_concept_id != target_id
+            ):
+                raise ValueError(
+                    "a process edge supporting relationship must have the same direction"
+                )
+        evidence_list(edge, state, allow_empty=True)
+        evidence_list_from_key(edge, "negative_evidence", state)
+
+
+def _process_edge_supporting_evidence(edge: ProcessEdge) -> list[Any]:
+    """Expose persisted edge evidence for process-level memo construction."""
+    return edge.supporting_evidence
 
 
 def _extend_process_edges(destination: list[ProcessEdge], additions: list[ProcessEdge]) -> None:
@@ -382,7 +545,12 @@ def apply_relational_grounding_validation(
     )
     if next_material is None:
         raise ValueError("all pending relational claims have already been reviewed")
-    reviewed_claim = normalize_claim_review(payload, next_material["review_claim"])
+    reviewed_claim = normalize_claim_review(
+        payload,
+        next_material["review_claim"],
+        allowed_record_ids={record["id"] for record in next_material["review_records"]},
+        review_record_texts={record.id: record.text for record in state.records},
+    )
     state.pending_relational_review_results.append(reviewed_claim)
 
     remaining = next_relational_review_material(
@@ -394,7 +562,7 @@ def apply_relational_grounding_validation(
         return {
             "review_status": "PENDING",
             "reviewed_claim_id": reviewed_claim["claim_id"],
-            "decision": reviewed_claim["decision"],
+            "decision": reviewed_claim.get("decision", reviewed_claim.get("edge_status")),
             "next_claim_id": remaining["review_claim"]["claim_id"],
         }
 
